@@ -35,7 +35,7 @@ When you're building an App Builder action or a Workfront extension, your AI age
 
 ## Using It in Your Project
 
-Add the server to your project's `.mcp.json` (or your global MCP config).
+Add the server to your project's `.mcp.json` (or your global MCP config). A `.mcp.json.example` is included in this repo as a starting point — copy it to `.mcp.json` and add any other servers you need.
 
 **Stage** (latest changes, may be updated frequently):
 ```json
@@ -82,7 +82,7 @@ Add the server to your Cursor MCP settings (`.cursor/mcp.json` or global Cursor 
   "mcpServers": {
     "adobe-extensibility-mcp": {
       "type": "streamable-http",
-      "url": "https://27200-635carminegamefowl-stage.adobeioruntime.net/api/v1/web/adobe-extensibility-mcp/skills-mcp"
+      "url": "https://27200-adobeextmcp.adobeioruntime.net/api/v1/web/adobe-extensibility-mcp/skills-mcp"
     }
   }
 }

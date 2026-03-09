@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "adobe-extensibility-mcp": {
+      "type": "streamable-http",
+      "url": "https://27200-adobeextmcp.adobeioruntime.net/api/v1/web/adobe-extensibility-mcp/skills-mcp"
+    }
+  }
+}

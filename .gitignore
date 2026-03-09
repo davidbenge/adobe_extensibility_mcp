@@ -2,7 +2,14 @@
 # package directories
 node_modules
 
+# Local MCP config (contains personal/internal server configs)
+.mcp.json
+
+# Build output
+dist/
+
 .env*
+!.env.example
 .aio
 
 # Test output
