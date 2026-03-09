@@ -1,0 +1,149 @@
+{
+  "deployId": "skills-mcp-v1",
+  "skills": [
+    {
+      "name": "app-builder-actions",
+      "description": "Adobe App Builder backend actions on Adobe I/O Runtime (Apache OpenWhisk serverless). Use when designing or implementing App Builder actions, action APIs, error handling, state store usage, async tasks, or I/O Runtime integration patterns. Do not use when the task is frontend-only, database schema, or MCP server implementation.\n",
+      "folder": "app-builder-actions",
+      "body": "# App Builder Actions Developer\n\n## Role\nBackend specialist for Adobe App Builder actions (OpenWhisk serverless functions) on Adobe I/O Runtime.\n\n## When to Load References\n\n- **ACTION_STRUCTURE.md** — Load when writing or reviewing any new action: runtime limits, params format, module.exports pattern, logger setup, action template\n- **MANIFEST_PATTERNS.md** — Load when configuring app.config.yaml, action names, timeouts, or deploying; also when using State Store or async tasks\n- **ERROR_HANDLING.md** — Load when implementing error responses, 4xx/5xx mapping, or the errorResponse() utility pattern\n- **IO_EVENTS.md** — Load when integrating with I/O Events, State, Files, or external services from an action\n\n## Core Concepts\n\n- Actions are stateless, exported as `module.exports = { main }` (CommonJS) or `export async function main` (TypeScript)\n- Each invocation receives params (body, headers via `__ow_headers`, path via `__ow_path`, plus config from manifest)\n- Return `{ statusCode, body }` or `{ error: { statusCode, body } }` — never throw from main\n- Logger: `Core.Logger('action-name', { level: params.LOG_LEVEL || 'info' })` from `@adobe/aio-sdk`\n- Deploy with `aio app deploy`; local dev with `aio app run`\n\n## Quick Reference\n\n| Task | Load |\n|------|------|\n| Write a new action | ACTION_STRUCTURE.md |\n| Configure app.config.yaml | MANIFEST_PATTERNS.md |\n| Add error handling | ERROR_HANDLING.md |\n| Use State Store or I/O Events | IO_EVENTS.md |",
+      "references": [
+        {
+          "path": "references/ACTION_STRUCTURE.md",
+          "filename": "ACTION_STRUCTURE.md"
+        },
+        {
+          "path": "references/ERROR_HANDLING.md",
+          "filename": "ERROR_HANDLING.md"
+        },
+        {
+          "path": "references/IO_EVENTS.md",
+          "filename": "IO_EVENTS.md"
+        },
+        {
+          "path": "references/MANIFEST_PATTERNS.md",
+          "filename": "MANIFEST_PATTERNS.md"
+        }
+      ]
+    },
+    {
+      "name": "app-builder-frontend",
+      "description": "Adobe App Builder frontend (Jamstack, React, Adobe React Spectrum) for unified shell, Workfront, and AEM extension points. Use when implementing React components, calling backend actions from the browser, handling IMS tokens in standalone or unified shell mode, or building extension-point UIs. Do not use for backend-only action work or MCP server implementation.\n",
+      "folder": "app-builder-frontend",
+      "body": "# App Builder Frontend Developer\n\n## Role\nFrontend specialist for App Builder extension-point apps. Uses Adobe React Spectrum only. Knows how to call backend actions, handle IMS auth, and work within unified shell vs standalone contexts.\n\n## When to Load References\n\n- **REACT_SPECTRUM.md** — Load when building any UI component; covers Provider requirement, sizing tokens, common components, patterns\n- **ACTION_WIRING.md** — Load when calling backend actions from the frontend, consuming REST APIs, or wiring up HTTP fetch patterns\n- **TOKEN_PATTERNS.md** — Load when implementing IMS sign-in, token handling, standalone bootstrap, or unified shell auth\n- **UI_KIT_COMPONENTS.md** — Load for specific component recipes: forms, navigation, overlays, empty states, loading states\n\n## Core Constraints\n\n- **Adobe React Spectrum only** — no Material-UI, Bootstrap, Ant Design, or other UI libraries\n- Always wrap in `<Provider theme={defaultTheme}>` from `@adobe/react-spectrum`\n- Use Spectrum dimension tokens (e.g. `size-200`) — never hardcoded pixels\n- No DOM APIs in actions; no Node-only modules in web-src (dual-runtime boundary)\n- Frontend lives in `web-src/`; static assets in `public/`\n\n## Extension Points\n\n| Extension | Directory | Description |\n|-----------|-----------|-------------|\n| Unified Shell | `src/dx-excshell-1/web-src/` | experience.adobe.com app |\n| Workfront UI | `src/workfront-ui-1/web-src/` | Workfront product extension |\n| AEM CF Console | `src/aem-cf-console-admin-1/web-src/` | AEM Content Fragment extension |\n\n## Quick Reference\n\n| Task | Load |\n|------|------|\n| Build any component | REACT_SPECTRUM.md |\n| Call backend action | ACTION_WIRING.md |\n| Implement IMS auth | TOKEN_PATTERNS.md |\n| Build forms/navigation/dialogs | UI_KIT_COMPONENTS.md |",
+      "references": [
+        {
+          "path": "references/ACTION_WIRING.md",
+          "filename": "ACTION_WIRING.md"
+        },
+        {
+          "path": "references/REACT_SPECTRUM.md",
+          "filename": "REACT_SPECTRUM.md"
+        },
+        {
+          "path": "references/TOKEN_PATTERNS.md",
+          "filename": "TOKEN_PATTERNS.md"
+        },
+        {
+          "path": "references/UI_KIT_COMPONENTS.md",
+          "filename": "UI_KIT_COMPONENTS.md"
+        }
+      ]
+    },
+    {
+      "name": "workfront-extension",
+      "description": "Adobe Workfront product extension development using App Builder (workfront-ui-1 extension point). Use when registering extension points in Workfront, integrating with Workfront unified shell, building navigation in the Workfront left panel, or communicating between your extension and the Workfront host. Do not use for Workfront REST API calls (use workfront-tasks-api, workfront-issues-api, or workfront-forms-api instead).\n",
+      "folder": "workfront-extension",
+      "body": "# Workfront Extension Developer\n\n## Role\nExtension specialist for Workfront product extensions built on App Builder (workfront-ui-1 extension point).\n\n## When to Load References\n\n- **EXTENSION_REGISTRATION.md** — Load when registering the extension in Adobe Developer Console, configuring ext.config.yaml, or understanding the extension point contract\n- **SHELL_INTEGRATION.md** — Load when attaching to the Workfront unified shell, receiving auth tokens from the host, or using the UIX guest SDK\n- **NAVIGATION.md** — Load when adding navigation items to the Workfront left panel or implementing panel/route navigation within the extension\n- **COMMUNICATION.md** — Load when sending messages between the extension iframe and the Workfront host, or handling host-initiated events\n\n## Architecture\n\nWorkfront extensions:\n- Run as iframes injected by the Workfront shell\n- Communicate via the UIX (UI Extensibility) messaging protocol\n- Auth token is provided by the host (no standalone IMS flow needed)\n- Frontend lives at `src/workfront-ui-1/web-src/`\n- Actions live at `src/workfront-ui-1/actions/`\n- Extension manifest at `src/workfront-ui-1/ext.config.yaml`\n\n## Quick Reference\n\n| Task | Load |\n|------|------|\n| Register extension point | EXTENSION_REGISTRATION.md |\n| Get token from host | SHELL_INTEGRATION.md |\n| Add to left panel | NAVIGATION.md |\n| Message host app | COMMUNICATION.md |",
+      "references": [
+        {
+          "path": "references/COMMUNICATION.md",
+          "filename": "COMMUNICATION.md"
+        },
+        {
+          "path": "references/EXTENSION_REGISTRATION.md",
+          "filename": "EXTENSION_REGISTRATION.md"
+        },
+        {
+          "path": "references/NAVIGATION.md",
+          "filename": "NAVIGATION.md"
+        },
+        {
+          "path": "references/SHELL_INTEGRATION.md",
+          "filename": "SHELL_INTEGRATION.md"
+        }
+      ]
+    },
+    {
+      "name": "workfront-forms-api",
+      "description": "Workfront Custom Forms API (Category and Parameter objects). Use when reading form definitions, inspecting parameter (field) configurations, reading or writing parameterValues on any Workfront object, or understanding form structure and category attachment. Do not use for Tasks (use workfront-tasks-api) or Issues (use workfront-issues-api) for general CRUD.\n",
+      "folder": "workfront-forms-api",
+      "body": "# Workfront Forms API\n\n## Role\nAPI specialist for Workfront Custom Forms (Category, Parameter, ParameterGroup, ParameterValue). Knows form schema, field definitions, parameterValues access patterns, and category object associations.\n\n## When to Load References\n\n- **PARAMETER_FIELDS.md** — Load when inspecting parameter/field definitions (name, type, required, allowed values)\n- **PARAMETER_VALUES.md** — Load when reading or writing parameterValues on tasks, issues, or projects\n- **FORM_STRUCTURE.md** — Load when understanding how forms are structured (Category → ParameterGroup → Parameter) or when attaching/detaching forms\n- **CATEGORY_OBJECT.md** — Load when working with the Category object directly (listing forms, finding which forms are on an object)\n\n## Core Concepts\n\n- Custom forms are called **Categories** in the API\n- Fields are called **Parameters** (Parameter objects)\n- Field groups on forms are **ParameterGroups**\n- Values on objects are **parameterValues** (prefixed with `DE:`)\n- Any Workfront object type can have custom forms attached\n\n## Quick Reference\n\n| Task | Load |\n|------|------|\n| Inspect field definitions | PARAMETER_FIELDS.md |\n| Read/write form values | PARAMETER_VALUES.md |\n| Understand form structure | FORM_STRUCTURE.md |\n| List or attach forms | CATEGORY_OBJECT.md |",
+      "references": [
+        {
+          "path": "references/CATEGORY_OBJECT.md",
+          "filename": "CATEGORY_OBJECT.md"
+        },
+        {
+          "path": "references/FORM_STRUCTURE.md",
+          "filename": "FORM_STRUCTURE.md"
+        },
+        {
+          "path": "references/PARAMETER_FIELDS.md",
+          "filename": "PARAMETER_FIELDS.md"
+        },
+        {
+          "path": "references/PARAMETER_VALUES.md",
+          "filename": "PARAMETER_VALUES.md"
+        }
+      ]
+    },
+    {
+      "name": "workfront-issues-api",
+      "description": "Workfront Issues (also called Requests or OPTASK) REST API. Use when reading, creating, updating, searching, or resolving Workfront issues; managing issue status transitions; handling issue assignments; or building issue queue and filter patterns. Do not use for Tasks (use workfront-tasks-api) or Custom Forms schema (use workfront-forms-api).\n",
+      "folder": "workfront-issues-api",
+      "body": "# Workfront Issues API\n\n## Role\nAPI specialist for Workfront Issue/Request objects (OPTASK). Knows issue field names, status transitions, assignment patterns, and query patterns for issue queues.\n\n## When to Load References\n\n- **ISSUE_FIELDS.md** — Load when you need to know which fields exist on an Issue object, their API names, and data types\n- **STATUS_TRANSITIONS.md** — Load when implementing issue status changes, approval flows, or lifecycle management\n- **ASSIGNMENTS.md** — Load when assigning issues to users, teams, or job roles, or when managing multi-person assignments\n- **QUERY_PATTERNS.md** — Load when building issue queue filters, search, sorting, or reporting on issues\n\n## Core Concepts\n\n- Workfront API base: `https://{domain}.my.workfront.com/attask/api/v18.0/`\n- Auth: `Authorization: Bearer {imsToken}` header\n- Issue object type: `OPTASK` (or use full endpoint `/issue`)\n- Issues are also called \"Requests\" (when submitted via request queues)\n\n## Quick Reference\n\n| Task | Load |\n|------|------|\n| Know issue field names | ISSUE_FIELDS.md |\n| Handle status changes | STATUS_TRANSITIONS.md |\n| Assign to users/teams | ASSIGNMENTS.md |\n| Build issue queries | QUERY_PATTERNS.md |",
+      "references": [
+        {
+          "path": "references/ASSIGNMENTS.md",
+          "filename": "ASSIGNMENTS.md"
+        },
+        {
+          "path": "references/ISSUE_FIELDS.md",
+          "filename": "ISSUE_FIELDS.md"
+        },
+        {
+          "path": "references/QUERY_PATTERNS.md",
+          "filename": "QUERY_PATTERNS.md"
+        },
+        {
+          "path": "references/STATUS_TRANSITIONS.md",
+          "filename": "STATUS_TRANSITIONS.md"
+        }
+      ]
+    },
+    {
+      "name": "workfront-tasks-api",
+      "description": "Workfront Tasks REST API (Attask/API). Use when reading, creating, updating, or searching Workfront tasks, working with task custom form data, performing bulk task operations, or building query patterns for task lists and filters. Do not use for Workfront Issues (use workfront-issues-api) or Custom Forms schema (use workfront-forms-api).\n",
+      "folder": "workfront-tasks-api",
+      "body": "# Workfront Tasks API\n\n## Role\nAPI specialist for Workfront Task objects. Knows field names, search syntax, bulk operations, and custom form data access patterns.\n\n## When to Load References\n\n- **TASK_FIELDS.md** — Load when you need to know which fields exist on a Task object, their API names, and data types\n- **BULK_OPERATIONS.md** — Load when performing batch updates, bulk status changes, or multi-task operations\n- **CUSTOM_FORMS.md** — Load when reading or writing task custom form data (parameterValues)\n- **QUERY_PATTERNS.md** — Load when building task search filters, sorting, pagination, or reporting queries\n\n## Core Concepts\n\n- Workfront API base: `https://{domain}.my.workfront.com/attask/api/v18.0/`\n- Auth: `Authorization: Bearer {imsToken}` header\n- Task object type: `TASK` (or use full endpoint `/task`)\n- Field selection via `fields` param: `?fields=name,status,assignedTo:name`\n\n## Quick Reference\n\n| Task | Load |\n|------|------|\n| Know task field names | TASK_FIELDS.md |\n| Batch update tasks | BULK_OPERATIONS.md |\n| Read/write custom form data | CUSTOM_FORMS.md |\n| Build complex queries | QUERY_PATTERNS.md |",
+      "references": [
+        {
+          "path": "references/BULK_OPERATIONS.md",
+          "filename": "BULK_OPERATIONS.md"
+        },
+        {
+          "path": "references/CUSTOM_FORMS.md",
+          "filename": "CUSTOM_FORMS.md"
+        },
+        {
+          "path": "references/QUERY_PATTERNS.md",
+          "filename": "QUERY_PATTERNS.md"
+        },
+        {
+          "path": "references/TASK_FIELDS.md",
+          "filename": "TASK_FIELDS.md"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,87 @@
+{
+  "mcpServers": {
+    "context7": {
+      "type": "http",
+      "url": "https://mcp.context7.com/mcp",
+      "headers": {
+        "CONTEXT7_API_KEY": "${CONTEXT7_API_KEY}"
+      }
+    },
+    "adobe-developer-assistant": {
+      "type": "http",
+      "url": "https://ada.adobe.io/api/v2/ada/mcp"
+    },
+    "adobe-wiki-confluence": {
+      "type": "stdio",
+      "command": "docker",
+      "args": [
+        "run", "-i", "--rm",
+        "--name", "adobe-wiki-confluence-fghlo",
+        "--env-file", "~/.easymcp/adobe-mcp-servers/src/adobe-wiki/.env",
+        "adobe-wiki-confluence"
+      ]
+    },
+    "newrelic": {
+      "type": "stdio",
+      "command": "docker",
+      "args": [
+        "run", "-i", "--rm",
+        "--name", "newrelic-mcp-server-hvrmj",
+        "--env-file", "~/.easymcp/adobe-mcp-servers/src/new-relic/.env",
+        "newrelic-mcp-server"
+      ]
+    },
+    "spectrum-vars": {
+      "type": "stdio",
+      "command": "docker",
+      "args": [
+        "run", "-i", "--rm",
+        "--name", "spectrum-vars-mcp-server-gxblr",
+        "spectrum-vars-mcp-server"
+      ]
+    },
+    "i18n": {
+      "type": "stdio",
+      "command": "docker",
+      "args": [
+        "run", "-i", "--rm",
+        "--name", "in-mcp-server-scpwk",
+        "--env-file", "~/.easymcp/adobe-mcp-servers/src/i18n/.env",
+        "in-mcp-server"
+      ]
+    },
+    "react-spectrum-s2": {
+      "type": "stdio",
+      "command": "docker",
+      "args": [
+        "run", "-i", "--rm",
+        "--name", "react-spectrum-s-ndfgp",
+        "react-spectrum-s"
+      ]
+    },
+    "corp-jira": {
+      "type": "stdio",
+      "command": "docker",
+      "args": [
+        "run", "-i", "--rm",
+        "--name", "corp-jira-ydana",
+        "--env-file", "~/.easymcp/adobe-mcp-servers/src/corp-jira/.env",
+        "corp-jira"
+      ]
+    },
+    "corp-github": {
+      "type": "stdio",
+      "command": "docker",
+      "args": [
+        "run", "-i", "--rm",
+        "--name", "corp-github-iehac",
+        "--env-file", "~/.easymcp/adobe-mcp-servers/src/corp-github/.env",
+        "corp-github"
+      ]
+    },
+    "adobe-extensibility-mcp": {
+      "type": "streamable-http",
+      "url": "https://27200-adobeextmcp-stage.adobeioruntime.net/api/v1/web/adobe-extensibility-mcp/skills-mcp"
+    }
+  }
+}

@@ -1,0 +1,13 @@
+interface:
+  display_name: "App Builder Frontend Developer"
+  short_description: "Designs App Builder frontend (unified shell, web-src). Knows dx-excshell-1 and Adobe React Spectrum UI."
+policy:
+  allow_implicit_invocation: true
+dependencies:
+  tools:
+    - type: "mcp"
+      value: "project-0-pattern_atlas_publishing-React Spectrum S2"
+      description: "React Spectrum S2 MCP for component APIs, icons, tokens"
+    - type: "mcp"
+      value: "project-0-pattern_atlas_publishing-context7"
+      description: "Context7 for React Spectrum docs and examples"

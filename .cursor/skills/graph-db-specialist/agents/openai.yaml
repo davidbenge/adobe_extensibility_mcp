@@ -1,0 +1,5 @@
+interface:
+  display_name: "Graph DB Specialist"
+  short_description: "RDF/OWL ontology, Neo4j schema, SHACL, temporal graph modeling, knowledge graph architecture for RAG."
+policy:
+  allow_implicit_invocation: true

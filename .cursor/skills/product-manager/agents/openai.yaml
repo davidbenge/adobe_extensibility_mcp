@@ -1,0 +1,5 @@
+interface:
+  display_name: "Product Manager"
+  short_description: "Feature planning, user stories, acceptance criteria, product roadmap, backlog overlap review, stakeholder interviews."
+policy:
+  allow_implicit_invocation: true

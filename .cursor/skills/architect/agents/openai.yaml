@@ -1,0 +1,5 @@
+interface:
+  display_name: "Architect"
+  short_description: "Reviews story architectural impact, system boundaries, trade-offs, pattern lifecycle, technical debt, sequence diagrams."
+policy:
+  allow_implicit_invocation: true

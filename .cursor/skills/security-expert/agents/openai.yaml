@@ -1,0 +1,5 @@
+interface:
+  display_name: "Security Expert"
+  short_description: "Reviews threat surface, vulnerability patterns, auth concerns, data exposure risks."
+policy:
+  allow_implicit_invocation: true

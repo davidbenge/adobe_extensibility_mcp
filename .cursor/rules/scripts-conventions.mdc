@@ -1,0 +1,15 @@
+---
+description: Scripts must live under scripts/ and be CommonJS
+globs: scripts/**/*
+alwaysApply: false
+---
+
+# Scripts Conventions
+
+- All project scripts belong under `scripts/`.
+- Scripts are **CommonJS** (`.js`, `require`/`module.exports`). No TypeScript in scripts/.
+- One script per concern; document purpose, env vars, and usage in a header comment.
+- Current scripts:
+  - `scripts/generate-registry.js` — Walks `actions/skills-mcp/skills/`, parses SKILL.md frontmatter, writes `actions/skills-mcp/registry.json`. Run via `npm run prebuild` or `npm run pretest`.
+- When adding a new script, place it directly under `scripts/` (no subdirectories needed for simple projects).
+- Do not add scripts at repo root or under `actions/`.
