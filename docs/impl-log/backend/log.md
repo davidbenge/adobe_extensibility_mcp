@@ -1,5 +1,17 @@
 # Backend Implementation Log
 
+## 2026-03-10 — Workfront skill suite redesign
+
+Rebuilt Workfront API skill coverage: merged 3 narrow skills into 1 consolidated skill and added 3 new standalone skills.
+
+- Deleted: `workfront-tasks-api`, `workfront-issues-api`, `workfront-forms-api`
+- Added: `workfront-api` (12 refs — Tasks, Issues/OPTASK, Custom Forms sub-areas)
+- Added: `workfront-projects-api` (4 refs — Projects, Portfolios, Programs, Milestones)
+- Added: `workfront-events-api` (4 refs — Event Subscriptions/webhooks, payload, filtering, reliability)
+- Added: `workfront-documents-api` (4 refs — 2-step upload, versions, metadata, folders)
+- All API references updated from v18.0 → v21.0
+- Total: 6 → 7 skills, 24 → 32 reference files
+
 ## 2026-03-08 — Initial implementation
 
 Implemented `actions/skills-mcp/` with:
