@@ -1,5 +1,9 @@
 # Workfront Issues API — Issue Fields
 
+## CRITICAL: objCode is OPTASK
+
+Issues/Requests use objCode `OPTASK`. The API endpoint is `/issue` but the object code used in forms, subscriptions, and searches is always `OPTASK` — never "ISSUE".
+
 ## Core Fields
 
 | API Field | Type | Description |

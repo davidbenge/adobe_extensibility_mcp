@@ -1,11 +1,11 @@
-# Workfront Forms API — Parameter Fields
+# Workfront Custom Forms — Parameter Fields
 
 ## Parameter Object
 
 A Parameter is a single custom field (form field):
 
 ```http
-GET /attask/api/v18.0/parameter/{id}?fields=name,label,dataType,displayType,isRequired,possibleValues
+GET /attask/api/v21.0/parameter/{id}?fields=name,label,dataType,displayType,isRequired,possibleValues
 ```
 
 ## Key Parameter Fields
@@ -41,9 +41,11 @@ GET /attask/api/v18.0/parameter/{id}?fields=name,label,dataType,displayType,isRe
 ## possibleValues (for DROP/MULT/RADIO)
 
 ```http
-GET /attask/api/v18.0/parameter/{id}?fields=possibleValues
+GET /attask/api/v21.0/parameter/{id}?fields=possibleValues
+```
 
 Response:
+```json
 {
     "possibleValues": [
         { "value": "High", "label": "High Priority" },
@@ -53,15 +55,13 @@ Response:
 }
 ```
 
-## Searching Parameters
+## Search Parameters for a Form
 
 ```http
-GET /attask/api/v18.0/parameter/search?categoryID={formId}&fields=name,label,dataType,displayType,isRequired
+GET /attask/api/v21.0/parameter/search?categoryID={formId}&fields=name,label,dataType,displayType,isRequired
 ```
 
 ## Required Field Validation
-
-When writing to a form, validate required fields:
 
 ```javascript
 async function validateRequiredFields(categoryId, parameterValues, token, domain) {

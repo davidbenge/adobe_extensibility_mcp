@@ -3,7 +3,7 @@
 ## Updating Issue Status
 
 ```http
-PUT /attask/api/v18.0/issue/{id}
+PUT /attask/api/v21.0/issue/{id}
 Content-Type: application/json
 Authorization: Bearer {token}
 
@@ -28,10 +28,10 @@ CPL → RPN (re-opened)
 
 ## Status with Resolution
 
-When closing an issue, set status and resolution together:
+When closing an issue, set status and optional resolution together:
 
 ```http
-PUT /attask/api/v18.0/issue/{id}
+PUT /attask/api/v21.0/issue/{id}
 Content-Type: application/json
 
 {
@@ -44,7 +44,7 @@ Or close without a resolving object:
 
 ```javascript
 async function closeIssue(issueId, resolution, token, domain) {
-    const response = await fetch(`https://${domain}.my.workfront.com/attask/api/v18.0/issue/${issueId}`, {
+    const response = await fetch(`https://${domain}.my.workfront.com/attask/api/v21.0/issue/${issueId}`, {
         method: 'PUT',
         headers: {
             'Authorization': `Bearer ${token}`,
@@ -61,8 +61,6 @@ async function closeIssue(issueId, resolution, token, domain) {
 
 ## Approval Flow
 
-For issues with approval paths:
-
 ```javascript
 // Submit for approval
 await updateIssue(id, { status: 'PRA' }, token, domain)
@@ -77,12 +75,12 @@ await addComment(id, 'Rejected: reason here', token, domain)
 
 ## Status Validation
 
-Always check allowed transitions before updating. Workfront returns an error if a transition is not allowed:
+Always check for errors — Workfront returns an error if a transition is not allowed:
 
 ```javascript
 async function safeStatusUpdate(issueId, newStatus, token, domain) {
     const response = await fetch(
-        `https://${domain}.my.workfront.com/attask/api/v18.0/issue/${issueId}`,
+        `https://${domain}.my.workfront.com/attask/api/v21.0/issue/${issueId}`,
         {
             method: 'PUT',
             headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },

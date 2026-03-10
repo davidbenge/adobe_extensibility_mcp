@@ -1,13 +1,13 @@
-# Workfront Forms API — Parameter Values
+# Workfront Custom Forms — Parameter Values
 
 ## Reading parameterValues
 
 parameterValues are available on any object that has custom forms attached:
 
 ```http
-GET /attask/api/v18.0/task/{id}?fields=parameterValues
-GET /attask/api/v18.0/issue/{id}?fields=parameterValues
-GET /attask/api/v18.0/proj/{id}?fields=parameterValues
+GET /attask/api/v21.0/task/{id}?fields=parameterValues
+GET /attask/api/v21.0/issue/{id}?fields=parameterValues
+GET /attask/api/v21.0/proj/{id}?fields=parameterValues
 ```
 
 Response:
@@ -30,7 +30,7 @@ The key format is `DE:{field label}` — the `DE:` prefix is always present.
 ## Writing parameterValues
 
 ```http
-PUT /attask/api/v18.0/task/{id}
+PUT /attask/api/v21.0/task/{id}
 Content-Type: application/json
 
 {
@@ -59,20 +59,18 @@ Only include fields you want to change. Other values are preserved.
 
 ## Bulk Read parameterValues
 
-To read parameterValues for many objects at once:
-
 ```http
-GET /attask/api/v18.0/task/search?projectID={id}&fields=name,parameterValues&$$LIMIT=200
+GET /attask/api/v21.0/task/search?projectID={id}&fields=name,parameterValues&$$LIMIT=200
 ```
 
 ## Finding Field Labels
 
-If you know the field name but not the label (for the `DE:` key), look up the Parameter:
+If you know the field name but not the label (for the `DE:` key):
 
 ```javascript
 async function getParamLabel(paramName, token, domain) {
     const res = await fetch(
-        `https://${domain}.my.workfront.com/attask/api/v18.0/parameter/search?name=${paramName}&fields=label`,
+        `https://${domain}.my.workfront.com/attask/api/v21.0/parameter/search?name=${paramName}&fields=label`,
         { headers: { 'Authorization': `Bearer ${token}` } }
     )
     const data = await res.json()

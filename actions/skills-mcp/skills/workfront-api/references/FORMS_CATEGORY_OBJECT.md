@@ -1,38 +1,38 @@
-# Workfront Forms API — Category Object
+# Workfront Custom Forms — Category Object
 
 ## What is a Category?
 
-In the Workfront API, a **Category** = a Custom Form. Categories are reusable form definitions that can be attached to any object type.
+In the Workfront API, a **Category** = a Custom Form. Categories are reusable form definitions that can be attached to any Workfront object type.
 
 ## List All Custom Forms
 
 ```http
-GET /attask/api/v18.0/category/search?fields=name,description,objCodes
+GET /attask/api/v21.0/category/search?fields=name,description,objCodes
 ```
 
 ## Get Form Details
 
 ```http
-GET /attask/api/v18.0/category/{id}?fields=name,description,objCodes,parameterGroups:parameterGroup:name
+GET /attask/api/v21.0/category/{id}?fields=name,description,objCodes,parameterGroups:parameterGroup:name
 ```
 
 ## Find Which Forms Are on an Object
 
 ```http
-GET /attask/api/v18.0/task/{id}?fields=objectCategories
+GET /attask/api/v21.0/task/{id}?fields=objectCategories
 ```
 
 Or query objectCategory:
 
 ```http
-GET /attask/api/v18.0/objectCategory/search?objCode=TASK&objID={taskId}&fields=category:name,categoryID
+GET /attask/api/v21.0/objectCategory/search?objCode=TASK&objID={taskId}&fields=category:name,categoryID
 ```
 
 ## Filter Categories by Object Type
 
 ```http
-GET /attask/api/v18.0/category/search?objCodes=TASK&fields=name,description
-GET /attask/api/v18.0/category/search?objCodes=OPTASK&fields=name,description
+GET /attask/api/v21.0/category/search?objCodes=TASK&fields=name,description
+GET /attask/api/v21.0/category/search?objCodes=OPTASK&fields=name,description
 ```
 
 ## Category Fields
@@ -52,7 +52,7 @@ GET /attask/api/v18.0/category/search?objCodes=OPTASK&fields=name,description
 ```javascript
 async function getFormSchema(categoryId, token, domain) {
     const res = await fetch(
-        `https://${domain}.my.workfront.com/attask/api/v18.0/category/${categoryId}?fields=name,parameterGroups:parameterGroup:categoryParameters:parameter:name,parameter:label,parameter:dataType,parameter:displayType,parameter:isRequired,parameter:possibleValues`,
+        `https://${domain}.my.workfront.com/attask/api/v21.0/category/${categoryId}?fields=name,parameterGroups:parameterGroup:categoryParameters:parameter:name,parameter:label,parameter:dataType,parameter:displayType,parameter:isRequired,parameter:possibleValues`,
         { headers: { 'Authorization': `Bearer ${token}` } }
     )
     const data = await res.json()
@@ -63,7 +63,7 @@ async function getFormSchema(categoryId, token, domain) {
 ## Creating a Category (Admin)
 
 ```http
-POST /attask/api/v18.0/category
+POST /attask/api/v21.0/category
 Content-Type: application/json
 
 {
@@ -73,4 +73,4 @@ Content-Type: application/json
 }
 ```
 
-Creating forms requires admin/group admin permissions.
+Creating forms requires admin or group admin permissions.

@@ -18,6 +18,7 @@
 | `plannedHours` | number | Planned effort hours |
 | `actualHours` | number | Logged hours |
 | `workRequired` | number | Total work required in minutes |
+| `actualWorkRequiredDouble` | number | v21: hours (replaces legacy minutes field) |
 
 ## Assignment Fields
 
@@ -52,8 +53,15 @@
 | `RDY` | Ready to Start |
 | `ONH` | On Hold |
 
-## Field Selection Example
+## Field Selection Examples
 
 ```http
-GET /attask/api/v18.0/task/{id}?fields=name,status,percentComplete,assignedTo:name,project:name,plannedStartDate,plannedCompletionDate
+# Core task with assignment and dates
+GET /attask/api/v21.0/task/{id}?fields=name,status,percentComplete,assignedTo:name,project:name,plannedStartDate,plannedCompletionDate
+
+# Full task with hierarchy
+GET /attask/api/v21.0/task/{id}?fields=*,parent:name,children[ID,name,status]
+
+# Subtasks for a parent task
+GET /attask/api/v21.0/task/search?parentID={parentId}&fields=name,status,percentComplete,assignedTo:name
 ```

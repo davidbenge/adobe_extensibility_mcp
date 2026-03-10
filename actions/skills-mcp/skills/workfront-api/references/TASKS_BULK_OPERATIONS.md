@@ -1,11 +1,11 @@
 # Workfront Tasks API — Bulk Operations
 
-## Bulk Update via EDIT
+## Bulk Update via PUT
 
 Update multiple tasks in one request:
 
 ```http
-PUT /attask/api/v18.0/task
+PUT /attask/api/v21.0/task
 Content-Type: application/json
 Authorization: Bearer {token}
 
@@ -24,7 +24,7 @@ Authorization: Bearer {token}
 async function bulkUpdateTaskStatus(taskIds, newStatus, token, domain) {
     const updates = taskIds.map(id => ({ ID: id, status: newStatus }))
 
-    const response = await fetch(`https://${domain}.my.workfront.com/attask/api/v18.0/task`, {
+    const response = await fetch(`https://${domain}.my.workfront.com/attask/api/v21.0/task`, {
         method: 'PUT',
         headers: {
             'Authorization': `Bearer ${token}`,
@@ -41,7 +41,7 @@ async function bulkUpdateTaskStatus(taskIds, newStatus, token, domain) {
 ## Batch Create
 
 ```http
-POST /attask/api/v18.0/task
+POST /attask/api/v21.0/task
 Content-Type: application/json
 
 {
@@ -55,7 +55,7 @@ Content-Type: application/json
 ## Bulk Delete
 
 ```http
-DELETE /attask/api/v18.0/task
+DELETE /attask/api/v21.0/task
 Content-Type: application/json
 
 {
@@ -68,7 +68,7 @@ Content-Type: application/json
 Workfront bulk operations return partial success. Check each item:
 
 ```javascript
-const results = data.data  // or data.errors for failures
+const results = data.data  // updated objects
 const errors = data.errors || []
 
 if (errors.length > 0) {
@@ -78,6 +78,6 @@ if (errors.length > 0) {
 
 ## Rate Limiting
 
-- Workfront API has rate limits; for very large batches, chunk into groups of 50-100
+- Chunk large batches into groups of 50–100
 - Use exponential backoff on 429 responses
 - Log each batch completion for auditability
