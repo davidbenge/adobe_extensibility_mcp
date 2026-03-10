@@ -1,40 +1,51 @@
 ---
 name: workfront-forms-api
 description: >
-  Workfront Custom Forms API (Category and Parameter objects). Use when reading form definitions,
-  inspecting parameter (field) configurations, reading or writing parameterValues on any Workfront object,
-  or understanding form structure and category attachment.
-  Do not use for Tasks (use workfront-tasks-api) or Issues (use workfront-issues-api) for general CRUD.
+  Use for Workfront Custom Forms — reading form definitions, inspecting parameter
+  configurations, and reading/writing parameterValues on any object type. Custom forms
+  apply to Tasks, Issues, Projects, Users, Portfolios, Programs, and more. In the API,
+  forms are "Categories" and fields are "Parameters". Trigger phrases: custom form,
+  parameterValues, Category object, Parameter object, DE: prefix, form fields,
+  form structure, catObjCode, form definition, attach form, detach form,
+  custom field value, form schema.
+  Do NOT use for Task CRUD (use workfront-tasks-api), Issue CRUD (use workfront-issues-api),
+  Projects (use workfront-projects-api), Documents (use workfront-documents-api),
+  or Event Subscriptions (use workfront-events-api).
 metadata:
   author: adobe-enterprise-architecture
   version: "1.0"
 ---
 
-# Workfront Forms API
+# Workfront Custom Forms API
 
 ## Role
-API specialist for Workfront Custom Forms (Category, Parameter, ParameterGroup, ParameterValue). Knows form schema, field definitions, parameterValues access patterns, and category object associations.
+API specialist for Workfront Custom Forms (Category/Parameter objects). Applies to ALL object types — Tasks, Issues/Requests, Projects, Users, Portfolios, Programs, and more. Knows form structure, Category fields, Parameter configurations, and parameterValues read/write patterns.
 
 ## When to Load References
 
-- **PARAMETER_FIELDS.md** — Load when inspecting parameter/field definitions (name, type, required, allowed values)
-- **PARAMETER_VALUES.md** — Load when reading or writing parameterValues on tasks, issues, or projects
-- **FORM_STRUCTURE.md** — Load when understanding how forms are structured (Category → ParameterGroup → Parameter) or when attaching/detaching forms
-- **CATEGORY_OBJECT.md** — Load when working with the Category object directly (listing forms, finding which forms are on an object)
+| Task | Load |
+|------|------|
+| Understand form structure and hierarchy | FORM_STRUCTURE.md |
+| List forms, attach/detach, inspect Category fields | CATEGORY_OBJECT.md |
+| Inspect Parameter definitions and display types | PARAMETER_FIELDS.md |
+| Read or write parameterValues on any object | PARAMETER_VALUES.md |
 
 ## Core Concepts
 
-- Custom forms are called **Categories** in the API
-- Fields are called **Parameters** (Parameter objects)
-- Field groups on forms are **ParameterGroups**
-- Values on objects are **parameterValues** (prefixed with `DE:`)
-- Any Workfront object type can have custom forms attached
+- **Base URL:** `https://<instance>.my.workfront.com/attask/api/v21.0/`
+- **Auth:** `Authorization: Bearer <token>` (OAuth2 recommended)
+- **Version:** Always specify `v21.0` explicitly in production
+- **Category = Custom Form** — `category` endpoint, not `form`
+- **Parameter = Custom Field** — individual fields within a form
+- **parameterValues:** available on ANY object with a custom form attached; key format is `DE:{field label}`
+- **Object scope:** Custom forms apply to TASK, OPTASK, PROJ, USER, PORT, PRGM, and other types — not just tasks/issues
+- **Pagination:** `$$FIRST=0&$$LIMIT=100` (max 2000 per request)
 
 ## Quick Reference
 
-| Task | Load |
-|------|------|
-| Inspect field definitions | PARAMETER_FIELDS.md |
-| Read/write form values | PARAMETER_VALUES.md |
-| Understand form structure | FORM_STRUCTURE.md |
-| List or attach forms | CATEGORY_OBJECT.md |
+| Task | Reference |
+|------|-----------|
+| Understand form/section/field hierarchy | FORM_STRUCTURE.md |
+| List or attach forms (Category object) | CATEGORY_OBJECT.md |
+| Inspect parameter definitions | PARAMETER_FIELDS.md |
+| Read/write form values on objects | PARAMETER_VALUES.md |

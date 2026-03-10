@@ -1,10 +1,14 @@
 ---
 name: workfront-tasks-api
 description: >
-  Workfront Tasks REST API (Attask/API). Use when reading, creating, updating, or searching
-  Workfront tasks, working with task custom form data, performing bulk task operations,
-  or building query patterns for task lists and filters.
-  Do not use for Workfront Issues (use workfront-issues-api) or Custom Forms schema (use workfront-forms-api).
+  Use for Workfront CRUD operations on Tasks (TASK objects). Covers task field names,
+  status codes, assignment fields, hierarchy (parent/subtask), bulk operations,
+  custom form data on tasks, and search/filter/sort patterns. Trigger phrases:
+  create task, update task, delete task, bulk update tasks, task status, task fields,
+  task hierarchy, subtasks, parentID, task assignment, plannedStartDate, percentComplete.
+  Do NOT use for Issues/Requests (use workfront-issues-api), Custom Form definitions
+  (use workfront-forms-api), Projects (use workfront-projects-api), Documents
+  (use workfront-documents-api), or Event Subscriptions (use workfront-events-api).
 metadata:
   author: adobe-enterprise-architecture
   version: "1.0"
@@ -13,27 +17,34 @@ metadata:
 # Workfront Tasks API
 
 ## Role
-API specialist for Workfront Task objects. Knows field names, search syntax, bulk operations, and custom form data access patterns.
+API specialist for Workfront Task (TASK) objects. Knows field names, status codes, bulk operations, assignment patterns, hierarchy (parent/subtask), and custom form data access on tasks.
 
 ## When to Load References
 
-- **TASK_FIELDS.md** — Load when you need to know which fields exist on a Task object, their API names, and data types
-- **BULK_OPERATIONS.md** — Load when performing batch updates, bulk status changes, or multi-task operations
-- **CUSTOM_FORMS.md** — Load when reading or writing task custom form data (parameterValues)
-- **QUERY_PATTERNS.md** — Load when building task search filters, sorting, pagination, or reporting queries
+| Task | Load |
+|------|------|
+| Know task field names, status codes | TASK_FIELDS.md |
+| Batch update or batch create tasks | BULK_OPERATIONS.md |
+| Read/write custom form data on tasks | CUSTOM_FORMS.md |
+| Build complex task queries | QUERY_PATTERNS.md |
 
 ## Core Concepts
 
-- Workfront API base: `https://{domain}.my.workfront.com/attask/api/v18.0/`
-- Auth: `Authorization: Bearer {imsToken}` header
-- Task object type: `TASK` (or use full endpoint `/task`)
-- Field selection via `fields` param: `?fields=name,status,assignedTo:name`
+- **Base URL:** `https://<instance>.my.workfront.com/attask/api/v21.0/`
+- **Auth:** `Authorization: Bearer <token>` (OAuth2 recommended)
+- **Version:** Always specify `v21.0` explicitly in production
+- **objCode:** `TASK` — endpoint is `/task`
+- **Write ops:** Include `sessionID` header for CSRF, or use OAuth2 Bearer token (covers CSRF)
+- **Field selection:** `fields=*` or `fields=ID,name,status` to control response size
+- **Pagination:** `$$FIRST=0&$$LIMIT=100` (max 2000 per request)
+- **Filter modifiers:** append `_Mod=eq|ne|gt|gte|lt|lte|contains|in|cicontains` to field param
+- **Custom form values:** `DE:{field label}` key format in `parameterValues`
 
 ## Quick Reference
 
-| Task | Load |
-|------|------|
+| Task | Reference |
+|------|-----------|
 | Know task field names | TASK_FIELDS.md |
 | Batch update tasks | BULK_OPERATIONS.md |
-| Read/write custom form data | CUSTOM_FORMS.md |
-| Build complex queries | QUERY_PATTERNS.md |
+| Read/write custom form data on tasks | CUSTOM_FORMS.md |
+| Build complex task queries | QUERY_PATTERNS.md |

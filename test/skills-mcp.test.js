@@ -115,7 +115,7 @@ describe('Adobe Developer Skills MCP Server', () => {
             expect(toolNames).toContain('read_skill_resource')
         })
 
-        test('list_skills should return JSON array with 6 skills, each with name + description', async () => {
+        test('list_skills should return JSON array with 10 skills, each with name + description', async () => {
             const toolCallRequest = {
                 jsonrpc: '2.0',
                 id: 3,
@@ -144,7 +144,7 @@ describe('Adobe Developer Skills MCP Server', () => {
 
             const skills = JSON.parse(body.result.content[0].text)
             expect(Array.isArray(skills)).toBe(true)
-            expect(skills).toHaveLength(6)
+            expect(skills).toHaveLength(10)
 
             for (const skill of skills) {
                 expect(skill.name).toBeDefined()

@@ -1,0 +1,47 @@
+---
+name: workfront-events-api
+description: >
+  Use for Workfront Event Subscriptions: setting up webhook push notifications
+  for object changes (CREATE, UPDATE, DELETE) on any Workfront object. Covers
+  subscription creation, event payload structure, filtering, auth verification,
+  retry handling, and subscription lifecycle management. Trigger phrases:
+  event subscription, webhook, push notification, object change notification,
+  subscribe to events, event payload, authToken, eventsubscription API.
+  This is a push/webhook paradigm — NOT a polling or CRUD skill.
+metadata:
+  author: adobe-enterprise-architecture
+  version: "1.0"
+---
+
+# Workfront Events API
+
+## Role
+Specialist for Workfront Event Subscriptions — the push/webhook notification system. Knows how to create, filter, and manage subscriptions; how to handle incoming event payloads; and how to build reliable webhook handlers.
+
+## When to Load References
+
+| Task | Load |
+|------|------|
+| Create, list, or delete a subscription | EVENTS_SUBSCRIPTION_SETUP.md |
+| Understand the event payload format | EVENTS_PAYLOAD_STRUCTURE.md |
+| Filter subscriptions by object field changes | EVENTS_FILTERING.md |
+| Handle auth, TLS, retries, idempotency | EVENTS_RELIABILITY.md |
+
+## Core Concepts
+
+- **Different endpoint:** Event Subscriptions use a different base URL:
+  `https://<instance>.my.workfront.com/attask/eventsubscription/api/v1/subscriptions`
+  (NOT the standard REST API endpoint)
+- **Push, not poll:** Workfront pushes payloads to your webhook URL on object change
+- **5-second rule:** Your webhook handler MUST respond within 5 seconds — do all heavy processing async
+- **authToken verification:** Always verify the `Authorization` header on incoming webhooks equals your configured `authToken`
+- **Supported objCodes:** PROJ, TASK, OPTASK, DOCU, ASSGN, PORT, PRGM, USER, NOTE, HOUR, TMPL
+
+## Quick Reference
+
+| Task | Load |
+|------|------|
+| Create/list/delete subscription | EVENTS_SUBSCRIPTION_SETUP.md |
+| Parse CREATE/UPDATE/DELETE payload | EVENTS_PAYLOAD_STRUCTURE.md |
+| Filter events by field value or change | EVENTS_FILTERING.md |
+| Auth verification, TLS, retries, disabled state | EVENTS_RELIABILITY.md |
