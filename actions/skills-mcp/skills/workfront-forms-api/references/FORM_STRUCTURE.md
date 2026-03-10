@@ -1,5 +1,9 @@
 # Workfront Custom Forms — Form Structure
 
+> Custom forms apply to ALL Workfront object types: Tasks (TASK), Issues (OPTASK),
+> Projects (PROJ), Users (USER), Portfolios (PORT), Programs (PRGM), and more.
+> For reading/writing custom field values on a specific object, also see PARAMETER_VALUES.md.
+
 ## Hierarchy
 
 ```
@@ -49,6 +53,7 @@ Response structure:
 GET /attask/api/v21.0/category/search?objCode=TASK&fields=name,description
 GET /attask/api/v21.0/category/search?objCode=OPTASK&fields=name,description
 GET /attask/api/v21.0/category/search?objCode=PROJ&fields=name,description
+GET /attask/api/v21.0/category/search?objCode=USER&fields=name,description
 ```
 
 ## Object Codes for Custom Forms

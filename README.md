@@ -27,9 +27,13 @@ When you're building an App Builder action or a Workfront extension, your AI age
 | `app-builder-actions` | Writing or reviewing App Builder backend actions on I/O Runtime |
 | `app-builder-frontend` | React + Adobe React Spectrum UIs for App Builder extension points |
 | `workfront-extension` | Registering and building Workfront product extensions (workfront-ui-1) |
-| `workfront-tasks-api` | Calling the Workfront Tasks REST API |
-| `workfront-issues-api` | Calling the Workfront Issues REST API |
-| `workfront-forms-api` | Working with Workfront custom forms and field data |
+| `workfront-tasks-api` | Calling the Workfront Tasks REST API (TASK objects — CRUD, bulk ops, queries) |
+| `workfront-issues-api` | Calling the Workfront Issues/Requests REST API (OPTASK — assignments, status, queues) |
+| `workfront-forms-api` | Working with Workfront custom forms — Category, Parameter, parameterValues on any object type |
+| `workfront-projects-api` | Projects, Portfolios, Programs, and Milestones |
+| `workfront-events-api` | Workfront Event Subscriptions (webhooks) — setup, payload handling, reliability |
+| `workfront-documents-api` | Uploading, versioning, and organizing Workfront Documents |
+| `workfront-approvals-api` | Workfront Approval Processes — decisions, routes, and status integration |
 
 ---
 
@@ -145,7 +149,7 @@ Update the `url` in your `.mcp.json` with the URL from `get-url`.
 
 ```bash
 npm run dev   # starts local dev server via aio app run
-npm test      # runs the full test suite (37 tests)
+npm test      # runs the full test suite
 ```
 
 ---

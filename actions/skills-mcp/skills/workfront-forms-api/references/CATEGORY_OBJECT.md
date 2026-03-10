@@ -2,7 +2,7 @@
 
 ## What is a Category?
 
-In the Workfront API, a **Category** = a Custom Form. Categories are reusable form definitions that can be attached to any Workfront object type.
+In the Workfront API, a **Category** = a Custom Form. Categories are reusable form definitions that can be attached to any Workfront object type (Tasks, Issues, Projects, Users, Portfolios, Programs, etc.).
 
 ## List All Custom Forms
 
@@ -20,6 +20,8 @@ GET /attask/api/v21.0/category/{id}?fields=name,description,objCodes,parameterGr
 
 ```http
 GET /attask/api/v21.0/task/{id}?fields=objectCategories
+GET /attask/api/v21.0/issue/{id}?fields=objectCategories
+GET /attask/api/v21.0/proj/{id}?fields=objectCategories
 ```
 
 Or query objectCategory:
@@ -33,6 +35,7 @@ GET /attask/api/v21.0/objectCategory/search?objCode=TASK&objID={taskId}&fields=c
 ```http
 GET /attask/api/v21.0/category/search?objCodes=TASK&fields=name,description
 GET /attask/api/v21.0/category/search?objCodes=OPTASK&fields=name,description
+GET /attask/api/v21.0/category/search?objCodes=PROJ&fields=name,description
 ```
 
 ## Category Fields

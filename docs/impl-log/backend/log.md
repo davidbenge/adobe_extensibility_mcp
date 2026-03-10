@@ -1,5 +1,18 @@
 # Backend Implementation Log
 
+## 2026-03-10 — Revert workfront-api merge; restore 3 separate skills
+
+Reverted the `workfront-api` consolidation (12 refs, 3 sub-areas) back to 3 narrow skills. Design rationale: each skill should have one clear responsibility and ~4 reference files; sub-area prefixes (TASKS_*, ISSUES_*, FORMS_*) were a code smell indicating 3 skills in disguise.
+
+- Deleted: `workfront-api` (12 refs)
+- Restored: `workfront-tasks-api` (4 refs — TASK_FIELDS, BULK_OPERATIONS, CUSTOM_FORMS, QUERY_PATTERNS)
+- Restored: `workfront-issues-api` (4 refs — ISSUE_FIELDS, ASSIGNMENTS, STATUS_TRANSITIONS, QUERY_PATTERNS)
+- Restored: `workfront-forms-api` (4 refs — FORM_STRUCTURE, CATEGORY_OBJECT, PARAMETER_FIELDS, PARAMETER_VALUES)
+- workfront-forms-api description clarified: forms apply to ALL object types, not just tasks/issues
+- Cross-skill pointers added: CUSTOM_FORMS.md (tasks) → workfront-forms-api; PARAMETER_VALUES.md header notes all object types
+- Total: 7 → 10 skills, 32 → 40 reference files
+- Added: `workfront-approvals-api` (4 refs — approval processes, decisions, routes)
+
 ## 2026-03-10 — Workfront skill suite redesign
 
 Rebuilt Workfront API skill coverage: merged 3 narrow skills into 1 consolidated skill and added 3 new standalone skills.

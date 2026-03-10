@@ -1,22 +1,25 @@
-# Workfront Tasks API — Custom Forms on Tasks
+# Workfront Issues API — Custom Forms on Issues
+
+> For full Custom Form definitions (Category/Parameter objects, form structure, parameter types),
+> load the **workfront-forms-api** skill. This file covers reading/writing custom form data on issue objects only.
 
 ## Reading Custom Form Data
 
-Custom form values are in `parameterValues` on the task:
+Custom form values are in `parameterValues` on the issue:
 
 ```http
-GET /attask/api/v21.0/task/{id}?fields=parameterValues
+GET /attask/api/v21.0/issue/{id}?fields=parameterValues
 ```
 
 Response:
 ```json
 {
     "data": {
-        "ID": "task-id",
+        "ID": "issue-id",
         "parameterValues": {
-            "DE:Risk Level": "High",
-            "DE:Sprint": "Sprint 23",
-            "DE:Story Points": "5"
+            "DE:Root Cause": "Configuration",
+            "DE:Customer Impacted": "true",
+            "DE:Resolution Notes": "Updated firewall rule"
         }
     }
 }
@@ -27,13 +30,13 @@ Custom form fields use the `DE:` prefix followed by the field label.
 ## Writing Custom Form Data
 
 ```http
-PUT /attask/api/v21.0/task/{id}
+PUT /attask/api/v21.0/issue/{id}
 Content-Type: application/json
 
 {
     "parameterValues": {
-        "DE:Risk Level": "Medium",
-        "DE:Story Points": "8"
+        "DE:Root Cause": "User Error",
+        "DE:Customer Impacted": "false"
     }
 }
 ```
@@ -41,7 +44,7 @@ Content-Type: application/json
 ## Which Forms are Attached?
 
 ```http
-GET /attask/api/v21.0/task/{id}?fields=objectCategories
+GET /attask/api/v21.0/issue/{id}?fields=objectCategories
 ```
 
 Response includes `objectCategories` with category IDs — look up category details for field definitions.
@@ -49,7 +52,7 @@ Response includes `objectCategories` with category IDs — look up category deta
 ## Searching by Custom Field Value
 
 ```http
-GET /attask/api/v21.0/task/search?DE:Risk%20Level=High&fields=name,status
+GET /attask/api/v21.0/issue/search?DE:Customer%20Impacted=true&fields=name,status
 ```
 
 URL-encode field names with special characters.

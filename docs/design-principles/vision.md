@@ -18,7 +18,7 @@ This delivers relevant knowledge at the right moment — without bloating contex
 
 ## Success Metrics
 
-- 7 skill domains served correctly
+- 10 skill domains served correctly
 - All 3 MCP tools return valid responses
 - Agents using this server make fewer App Builder, Workfront, and IMS pattern mistakes
 - Knowledge can be updated by editing markdown files and redeploying — no code changes required
@@ -37,7 +37,10 @@ This delivers relevant knowledge at the right moment — without bloating contex
 | `app-builder-actions` | Adobe I/O Runtime action patterns, error handling, State Store |
 | `app-builder-frontend` | React Spectrum, IMS token patterns, action wiring |
 | `workfront-extension` | Workfront product extension registration and shell integration |
-| `workfront-api` | Workfront Tasks (TASK), Issues/Requests (OPTASK), and Custom Forms |
+| `workfront-tasks-api` | Workfront Tasks (TASK) — CRUD, fields, bulk ops, queries |
+| `workfront-issues-api` | Workfront Issues/Requests (OPTASK) — CRUD, assignments, status, queries |
+| `workfront-forms-api` | Workfront Custom Forms — Category, Parameter, parameterValues (all object types) |
 | `workfront-projects-api` | Workfront Projects, Portfolios, Programs, Milestones |
 | `workfront-events-api` | Workfront Event Subscriptions (webhooks) |
 | `workfront-documents-api` | Workfront Documents, Versions, Folders |
+| `workfront-approvals-api` | Workfront Approvals — approval processes, decisions, routes |

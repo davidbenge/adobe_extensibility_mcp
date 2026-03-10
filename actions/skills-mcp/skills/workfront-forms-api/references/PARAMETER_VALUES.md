@@ -1,5 +1,9 @@
 # Workfront Custom Forms — Parameter Values
 
+> parameterValues are available on ANY Workfront object with custom forms attached:
+> Tasks, Issues, Projects, Users, Portfolios, Programs, and more.
+> The `DE:` prefix + field label is the universal key format across all object types.
+
 ## Reading parameterValues
 
 parameterValues are available on any object that has custom forms attached:
@@ -8,6 +12,7 @@ parameterValues are available on any object that has custom forms attached:
 GET /attask/api/v21.0/task/{id}?fields=parameterValues
 GET /attask/api/v21.0/issue/{id}?fields=parameterValues
 GET /attask/api/v21.0/proj/{id}?fields=parameterValues
+GET /attask/api/v21.0/user/{id}?fields=parameterValues
 ```
 
 Response:
@@ -61,6 +66,7 @@ Only include fields you want to change. Other values are preserved.
 
 ```http
 GET /attask/api/v21.0/task/search?projectID={id}&fields=name,parameterValues&$$LIMIT=200
+GET /attask/api/v21.0/issue/search?projectID={id}&fields=name,parameterValues&$$LIMIT=200
 ```
 
 ## Finding Field Labels
