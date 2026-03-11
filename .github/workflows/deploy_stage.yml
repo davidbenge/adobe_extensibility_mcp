@@ -7,6 +7,7 @@ on:
 
 permissions:
   checks: write
+  contents: read
   pull-requests: write
 
 jobs:
@@ -71,3 +72,20 @@ jobs:
           name: E2E Test Results (Stage)
           path: test-results/e2e.xml
           reporter: jest-junit
+      - name: Open prod PR if none exists
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          existing=$(gh pr list --base main --head stage --state open --json number --jq length)
+          if [ "$existing" -eq 0 ]; then
+            gh pr create \
+              --base main \
+              --head stage \
+              --title "Deploy to prod" \
+              --body "Stage deployed and e2e tests passed. This PR was auto-created by the stage deploy workflow.
+
+          **Pre-merge gate:** CI will run live e2e tests against stage before this can be merged."
+            echo "PR created"
+          else
+            echo "PR already exists, skipping"
+          fi
