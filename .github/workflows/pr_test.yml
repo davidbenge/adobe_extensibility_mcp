@@ -104,3 +104,8 @@ jobs:
           name: E2E Test Results (Stage Gate)
           path: test-results/e2e-stage-gate.xml
           reporter: jest-junit
+      - name: Auto-merge to main
+        if: success()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh pr merge ${{ github.event.pull_request.number }} --squash --auto
