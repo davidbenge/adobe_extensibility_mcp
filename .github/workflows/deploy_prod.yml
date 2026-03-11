@@ -1,35 +1,36 @@
 name: AIO App CI
 
 on:
-  release:
-    types: [released]
+  push:
+    branches:
+      - main
+
+permissions:
+  checks: write
+  pull-requests: write
+
 jobs:
   deploy:
     name: Deploy to Prod
-    runs-on: ${{ matrix.os }}
-    strategy:
-      max-parallel: 1
-      matrix:
-        node-version: ['20']
-        os: [ubuntu-latest]
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Use Node.js ${{ matrix.node-version }}
+      - name: Use Node.js 20
         uses: actions/setup-node@v4
         with:
-          node-version: ${{ matrix.node-version }}
+          node-version: '20'
       - name: npm install
         run: npm i
       - name: Setup CLI
         uses: adobe/aio-cli-setup-action@1.3.0
         with:
-          os: ${{ matrix.os }}
+          os: ubuntu-latest
           version: 10.x.x
       - name: Auth
         uses: adobe/aio-apps-action@3.3.0
         with:
-          os: ${{ matrix.os }}
+          os: ubuntu-latest
           command: oauth_sts
           CLIENTID: ${{ secrets.CLIENTID_PROD }}
           CLIENTSECRET: ${{ secrets.CLIENTSECRET_PROD }}
@@ -42,7 +43,7 @@ jobs:
           AIO_RUNTIME_NAMESPACE: ${{ secrets.AIO_RUNTIME_NAMESPACE_PROD }}
         uses: adobe/aio-apps-action@3.3.0
         with:
-          os: ${{ matrix.os }}
+          os: ubuntu-latest
           command: build
       - name: Deploy
         env:
@@ -56,5 +57,18 @@ jobs:
           AIO_PROJECT_WORKSPACE_DETAILS_SERVICES: ${{ secrets.AIO_PROJECT_WORKSPACE_DETAILS_SERVICES_PROD }}
         uses: adobe/aio-apps-action@3.3.0
         with:
-          os: ${{ matrix.os }}
+          os: ubuntu-latest
           command: deploy
+          noPublish: true
+      - name: Run e2e tests
+        run: npm run test:e2e
+        env:
+          E2E_URL: https://27200-adobeextmcp.adobeioruntime.net/api/v1/web/adobe-extensibility-mcp/skills-mcp
+          JEST_JUNIT_OUTPUT_NAME: e2e.xml
+      - name: Publish e2e test results
+        uses: dorny/test-reporter@v1
+        if: success() || failure()
+        with:
+          name: E2E Test Results (Prod)
+          path: test-results/e2e.xml
+          reporter: jest-junit

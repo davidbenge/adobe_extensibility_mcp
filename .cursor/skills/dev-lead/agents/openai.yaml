@@ -1,5 +1,0 @@
-interface:
-  display_name: "Dev Lead"
-  short_description: "Estimates effort, identifies technical risks, reviews task dependency ordering, assesses implementation feasibility."
-policy:
-  allow_implicit_invocation: true

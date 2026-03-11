@@ -1,6 +1,6 @@
 # Adobe Extensibility MCP
 
-An MCP (Model Context Protocol) server that gives AI coding assistants — Cursor, Claude Code, and others — curated Adobe developer knowledge on demand. Instead of copy-pasting docs or hoping your AI already knows the patterns, point your agent at this server and it will pull the right guidance automatically as you build.
+An MCP (Model Context Protocol) server that gives AI coding assistants — Claude Code, and any other MCP-compatible agent — curated Adobe developer knowledge on demand. Instead of copy-pasting docs or hoping your AI already knows the patterns, point your agent at this server and it will pull the right guidance automatically as you build.
 
 Deployed on Adobe I/O Runtime (serverless, no infrastructure to manage).
 
@@ -76,27 +76,6 @@ Use the `adobe-extensibility-mcp` MCP server for all Adobe App Builder and Workf
 ```
 
 Then just work normally — ask Claude to build something and it will pull the right skill content before writing code.
-
-### Cursor
-
-Add the server to your Cursor MCP settings (`.cursor/mcp.json` or global Cursor settings):
-
-```json
-{
-  "mcpServers": {
-    "adobe-extensibility-mcp": {
-      "type": "streamable-http",
-      "url": "https://27200-adobeextmcp.adobeioruntime.net/api/v1/web/adobe-extensibility-mcp/skills-mcp"
-    }
-  }
-}
-```
-
-Cursor's agent will call the MCP tools when context suggests it — or you can prompt it directly:
-
-```
-Load the app-builder-actions skill and scaffold a new action that calls the Workfront Tasks API.
-```
 
 ---
 
@@ -185,6 +164,62 @@ npm test
 
 ```bash
 npm run deploy
+```
+
+---
+
+## Development Workflow
+
+### Branching
+
+| Branch | Purpose |
+|--------|---------|
+| `stage` | Default branch — all PRs target here |
+| `main` | Production — only promoted from `stage` via PR |
+
+### Making Changes
+
+```bash
+git checkout stage
+git checkout -b my-feature
+# make changes
+npm test                                      # unit tests must pass
+E2E_URL=<your-action-url> npm run test:e2e:report  # run e2e against your deployed env
+git add test-results/e2e-report.md
+git commit -m "test: update e2e test results"
+# open PR targeting stage
+```
+
+### CI Checks
+
+**PRs → `stage`**
+
+| Check | What it does |
+|-------|-------------|
+| `Unit Tests` | Runs jest, commits `test-results/unit-report.md` to the branch |
+| `E2E Results Present` | Fails if `test-results/e2e-report.md` is not committed |
+
+**PRs → `main`** (promoting stage to prod)
+
+| Check | What it does |
+|-------|-------------|
+| `E2E Tests (Stage)` | Runs live e2e tests against the stage endpoint — stage must be green before prod merge |
+
+### Deploy Pipeline
+
+```
+PR → stage   →   merge   →   deploy to stage   →   e2e post-deploy verification
+PR → main    →   merge   →   deploy to prod    →   e2e post-deploy verification
+```
+
+### Test Commands
+
+```bash
+npm test                                           # unit tests
+npm run test:e2e                                   # e2e against stage (default)
+E2E_URL=<url> npm run test:e2e                     # e2e against any endpoint
+npm run test:e2e:report                            # e2e + generate committed report
+npm run test:all:report                            # unit + e2e reports (pre-PR)
 ```
 
 ---

@@ -21,10 +21,20 @@ module.exports = {
     // Test environment
     testEnvironment: 'node',
 
-    // Test file patterns
+    // Test file patterns — e2e excluded from default run (use npm run test:e2e)
     testMatch: [
         '**/test/**/*.test.js',
         '**/test/**/*.spec.js'
+    ],
+    testPathIgnorePatterns: [
+        '/node_modules/',
+        '/test/e2e.test.js'
+    ],
+
+    // Reporters — jest-junit writes XML for CI result publishing
+    reporters: [
+        'default',
+        ['jest-junit', { outputDirectory: 'test-results' }]
     ],
 
     // Coverage collection
