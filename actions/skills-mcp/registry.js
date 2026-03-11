@@ -18,9 +18,6 @@ governing permissions and limitations under the License.
 
 'use strict'
 
-const fs = require('fs')
-const path = require('path')
-
 const registryData = require('./registry.json')
 
 const { deployId, skills } = registryData
@@ -40,20 +37,18 @@ const registry = skills.reduce((map, skill) => {
 
 /**
  * resourceCache: Map of "<skill_name>/<ref_path>" → file content string
- * Built at module scope so reads happen once per process, not per request.
+ * Content is embedded in registry.json at build time by generate-registry.js,
+ * so no filesystem access is needed at runtime (works correctly in webpack bundles).
  */
 const resourceCache = new Map()
 
 for (const skill of skills) {
-    const skillDir = path.join(__dirname, 'skills', skill.folder)
     for (const ref of skill.references) {
         const key = `${skill.name}/${ref.path}`
-        try {
-            const content = fs.readFileSync(path.join(skillDir, ref.path), 'utf8')
-            resourceCache.set(key, content)
-        } catch (err) {
-            // Log but don't crash — missing reference file is caught at registry-gen time
-            console.warn(`Warning: could not read resource ${key}: ${err.message}`)
+        if (ref.content !== undefined) {
+            resourceCache.set(key, ref.content)
+        } else {
+            console.warn(`Warning: no embedded content for resource ${key}`)
         }
     }
 }

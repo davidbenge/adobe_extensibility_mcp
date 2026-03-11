@@ -1,5 +1,0 @@
-interface:
-  display_name: "App Builder Actions Developer"
-  short_description: "Designs App Builder actions (OpenWhisk), APIs, and I/O Runtime patterns. Knows dx-excshell-1 and action structure."
-policy:
-  allow_implicit_invocation: true

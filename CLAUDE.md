@@ -2,7 +2,7 @@
 
 ## Project Summary
 
-A skills-serving MCP server deployed on Adobe I/O Runtime. Serves curated Adobe developer knowledge via 3 MCP tools to any MCP-compatible coding agent (Cursor, Claude Code, etc.).
+A skills-serving MCP server deployed on Adobe I/O Runtime. Serves curated Adobe developer knowledge via 3 MCP tools to any MCP-compatible coding agent (Claude Code, etc.).
 
 ## Commands
 
@@ -67,11 +67,6 @@ const result = await main({ __ow_method: 'post', __ow_body: JSON.stringify(reque
 | `scripts/generate-registry.js` | Build script |
 | `app.config.yaml` | I/O Runtime deployment config |
 | `test/skills-mcp.test.js` | Test suite |
-
-## Personas (Cursor)
-
-See `.cursor/skills/` — primary persona is `app-builder-mcp-developer`.
-Claude Code: use Read tool to load skill files directly.
 
 ## Design Principles
 

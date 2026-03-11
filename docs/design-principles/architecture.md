@@ -3,7 +3,7 @@
 ## Topology
 
 ```
-MCP Client (Cursor, Claude Code, etc.)
+MCP Client (Claude Code, or any MCP-compatible agent)
     ↓  HTTP POST (JSON-RPC 2.0)
 Adobe I/O Runtime — skills-mcp action
     ↓  require()
