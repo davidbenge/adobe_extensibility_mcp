@@ -1,48 +1,106 @@
-name: AIO App CI
+name: PR Tests
 
 on: [pull_request]
+
+permissions:
+  checks: write
+  contents: write
+  pull-requests: write
+
+# PRs targeting 'stage': unit tests (CI) + e2e report must be committed by developer
+# PRs targeting 'main':  e2e tests run live against stage endpoint as prod gate
+
 jobs:
-  test:
-    name: Test PR
-    runs-on: ${{ matrix.os }}
-    strategy:
-      matrix:
-        node-version: ['20']
-        os: [macOS-latest, ubuntu-latest, windows-latest]
+  unit-tests:
+    name: Unit Tests
+    if: github.base_ref == 'stage'
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Use Node.js ${{ matrix.node-version }}
+        with:
+          ref: ${{ github.head_ref }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Use Node.js 20
         uses: actions/setup-node@v4
         with:
-          node-version: ${{ matrix.node-version }}
+          node-version: '20'
       - name: npm install
         run: npm i
-      - name: Setup CLI
-        uses: adobe/aio-cli-setup-action@1.3.0
+      - name: Run unit tests
+        run: npm test -- --json --outputFile=test-results/unit-results.json
+        continue-on-error: true
+        id: unit
+      - name: Generate unit test report
+        run: node scripts/results-to-md.js test-results/unit-results.json test-results/unit-report.md 'Unit Tests'
+        if: always()
+      - name: Publish unit test results
+        uses: dorny/test-reporter@v1
+        if: always()
         with:
-          os: ${{ matrix.os }}
-          version: 10.x.x
-      - name: Auth
-        uses: adobe/aio-apps-action@3.3.0
+          name: Unit Test Results
+          path: test-results/unit.xml
+          reporter: jest-junit
+      - name: Commit unit test report
+        if: always()
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email 'github-actions[bot]@users.noreply.github.com'
+          git add test-results/unit-report.md
+          git diff --staged --quiet || git commit -m "chore: update unit test results [skip ci]"
+          git push origin HEAD:${{ github.head_ref }}
+      - name: Fail if unit tests failed
+        if: steps.unit.outcome == 'failure'
+        run: exit 1
+
+  validate-e2e-results:
+    name: E2E Results Present
+    if: github.base_ref == 'stage'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Verify e2e test report is committed
+        run: |
+          if [ ! -f test-results/e2e-report.md ]; then
+            echo ""
+            echo "❌ test-results/e2e-report.md not found."
+            echo ""
+            echo "Before opening this PR, run e2e tests against your deployed environment:"
+            echo ""
+            echo "  E2E_URL=<your-action-url> npm run test:e2e:report"
+            echo ""
+            echo "Then commit the results:"
+            echo ""
+            echo "  git add test-results/e2e-report.md"
+            echo "  git commit -m 'test: update e2e test results'"
+            echo ""
+            exit 1
+          fi
+          echo "✅ e2e-report.md found"
+          cat test-results/e2e-report.md
+
+  e2e-stage-gate:
+    name: E2E Tests (Stage)
+    if: github.base_ref == 'main'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Use Node.js 20
+        uses: actions/setup-node@v4
         with:
-          os: ${{ matrix.os }}
-          command: oauth_sts
-          CLIENTID: ${{ secrets.CLIENTID_STAGE }}
-          CLIENTSECRET: ${{ secrets.CLIENTSECRET_STAGE }}
-          TECHNICALACCOUNTID: ${{ secrets.TECHNICALACCID_STAGE }}
-          TECHNICALACCOUNTEMAIL: ${{ secrets.TECHNICALACCEMAIL_STAGE }}
-          IMSORGID: ${{ secrets.IMSORGID_STAGE }}
-          SCOPES: ${{ secrets.SCOPES_STAGE }}
-      - name: Build
+          node-version: '20'
+      - name: npm install
+        run: npm i
+      - name: Run e2e tests against stage
+        run: npm run test:e2e
         env:
-          AIO_RUNTIME_NAMESPACE: ${{ secrets.AIO_RUNTIME_NAMESPACE_STAGE }}
-        uses: adobe/aio-apps-action@3.3.0
+          JEST_JUNIT_OUTPUT_NAME: e2e-stage-gate.xml
+      - name: Publish e2e test results
+        uses: dorny/test-reporter@v1
+        if: success() || failure()
         with:
-          os: ${{ matrix.os }}
-          command: build
-      - name: Test
-        uses: adobe/aio-apps-action@3.3.0
-        with:
-          os: ${{ matrix.os }}
-          command: test
+          name: E2E Test Results (Stage Gate)
+          path: test-results/e2e-stage-gate.xml
+          reporter: jest-junit

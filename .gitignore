@@ -12,8 +12,9 @@ dist/
 !.env.example
 .aio
 
-# Test output
-junit.xml
+# Test output — XML/JSON are tooling artifacts; markdown reports are committed
+test-results/*.xml
+test-results/*.json
 
 # IDE & Temp
 .cache

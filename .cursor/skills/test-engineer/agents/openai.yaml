@@ -1,5 +1,0 @@
-interface:
-  display_name: "Test Engineer"
-  short_description: "Defines test strategy, coverage plans, edge cases for stories."
-policy:
-  allow_implicit_invocation: true

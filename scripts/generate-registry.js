@@ -67,9 +67,11 @@ for (const folder of folders) {
     if (fs.existsSync(refsDir)) {
         const refFiles = fs.readdirSync(refsDir).filter(f => f.endsWith('.md'))
         for (const refFile of refFiles) {
+            const refPath = path.join(refsDir, refFile)
             references.push({
                 path: `references/${refFile}`,
-                filename: refFile
+                filename: refFile,
+                content: fs.readFileSync(refPath, 'utf8')
             })
         }
     }

@@ -1,5 +1,0 @@
-interface:
-  display_name: "App Builder MCP Developer"
-  short_description: "Designs and deploys MCP servers for App Builder; I/O Runtime deployment, MCP tool/resource contracts."
-policy:
-  allow_implicit_invocation: true

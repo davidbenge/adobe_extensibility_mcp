@@ -7,9 +7,14 @@
     "prebuild": "node scripts/generate-registry.js",
     "pretest": "node scripts/generate-registry.js",
     "test": "jest",
+    "test:report": "jest --json --outputFile=test-results/unit-results.json; node scripts/results-to-md.js test-results/unit-results.json test-results/unit-report.md 'Unit Tests'",
+    "test:e2e": "jest test/e2e.test.js --testPathIgnorePatterns=node_modules --testTimeout=30000 --forceExit --no-coverage",
+    "test:e2e:report": "jest test/e2e.test.js --testPathIgnorePatterns=node_modules --testTimeout=30000 --forceExit --no-coverage --json --outputFile=test-results/e2e-results.json && node scripts/results-to-md.js test-results/e2e-results.json test-results/e2e-report.md 'E2E Tests'",
+    "test:all:report": "npm run test:report && npm run test:e2e:report",
     "test:watch": "jest --watch",
     "build": "webpack",
     "deploy": "npm run build && aio app deploy",
+    "postdeploy": "npm run test:e2e",
     "undeploy": "aio app undeploy",
     "dev": "aio app run",
     "start": "node actions/skills-mcp/index.js",
@@ -22,16 +27,17 @@
     "zod": "^3.23.8"
   },
   "devDependencies": {
-    "gray-matter": "^4.0.3",
-    "jest": "^29.0.0",
+    "@adobe/generator-app-remote-mcp-server-generic": "^0.1.8",
     "@babel/core": "^7.26.10",
     "@babel/preset-env": "^7.26.9",
     "babel-loader": "^9.2.1",
-    "webpack": "^5.89.0",
-    "webpack-cli": "^5.1.4",
     "eslint": "^8.57.0",
+    "gray-matter": "^4.0.3",
+    "jest": "^29.0.0",
+    "jest-junit": "^16.0.0",
     "prettier": "^3.0.0",
-    "@adobe/generator-app-remote-mcp-server-generic": "^0.1.8"
+    "webpack": "^5.89.0",
+    "webpack-cli": "^5.1.4"
   },
   "keywords": [
     "adobe-io",
