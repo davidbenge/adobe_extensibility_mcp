@@ -26,6 +26,23 @@ API specialist for Workfront Project (PROJ) objects and the portfolio/program hi
 | Create, update, or delete projects | PROJECTS_CRUD.md |
 | Work with portfolios, programs, or milestones | PROJECTS_HIERARCHY.md |
 
+## Constitution & Impl-Log
+
+> Skip any file below that does not exist in this project — not all projects use all layers.
+
+### Design Principles (read-only, if `docs/design-principles/` exists)
+- `docs/design-principles/architecture.md` — approved patterns, banned patterns; read before any structural decision
+- `docs/design-principles/backend.md` — handler structure, error patterns, service boundaries; read before writing implementation code
+
+### Impl-Log (if `docs/impl-log/` exists)
+**Before implementing:**
+- Read `docs/impl-log/backend/index.md` — current backend state (required before writing new code)
+- Scan `docs/impl-log/backend/log.md` header lines — prior decisions relevant to this task
+
+**At task completion:**
+- Update `docs/impl-log/backend/index.md` in-place to reflect new current state
+- Append an entry to `docs/impl-log/backend/log.md`
+
 ## Shared Concepts
 
 - **Base URL:** `https://<instance>.my.workfront.com/attask/api/v21.0/`

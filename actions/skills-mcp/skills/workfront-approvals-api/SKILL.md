@@ -30,6 +30,23 @@ Specialist for Workfront Unified Approvals — the document and asset review/app
 | Read or interpret approval status and decisions | APPROVALS_STATUS_AND_DECISIONS.md |
 | Create/use templates, set deadlines, multi-stage | APPROVALS_TEMPLATES_AND_STAGES.md |
 
+## Constitution & Impl-Log
+
+> Skip any file below that does not exist in this project — not all projects use all layers.
+
+### Design Principles (read-only, if `docs/design-principles/` exists)
+- `docs/design-principles/architecture.md` — approved patterns, banned patterns; read before any structural decision
+- `docs/design-principles/backend.md` — handler structure, error patterns, service boundaries; read before writing implementation code
+
+### Impl-Log (if `docs/impl-log/` exists)
+**Before implementing:**
+- Read `docs/impl-log/backend/index.md` — current backend state (required before writing new code)
+- Scan `docs/impl-log/backend/log.md` header lines — prior decisions relevant to this task
+
+**At task completion:**
+- Update `docs/impl-log/backend/index.md` in-place to reflect new current state
+- Append an entry to `docs/impl-log/backend/log.md`
+
 ## Core Concepts
 
 - **Unified Approvals** is a separate API from the standard Workfront REST API — different base URL and auth model

@@ -21,6 +21,23 @@ metadata:
 ## Role
 Extension specialist for Workfront product extensions built on App Builder (workfront-ui-1 extension point).
 
+## Constitution & Impl-Log
+
+> Skip any file below that does not exist in this project — not all projects use all layers.
+
+### Design Principles (read-only, if `docs/design-principles/` exists)
+- `docs/design-principles/architecture.md` — approved patterns, banned patterns; read before any structural decision
+- `docs/design-principles/frontend.md` — UI framework, component rules, state management, accessibility; read before writing implementation code (load if file exists)
+
+### Impl-Log (if `docs/impl-log/` exists)
+**Before implementing:**
+- Read `docs/impl-log/frontend/index.md` — current component inventory, routes, state patterns in use (required before writing new code)
+- Scan `docs/impl-log/frontend/log.md` header lines — prior decisions relevant to this task
+
+**At task completion:**
+- Update `docs/impl-log/frontend/index.md` in-place to reflect new current state
+- Append an entry to `docs/impl-log/frontend/log.md`
+
 ## Related Skills
 
 - **app-builder-frontend** — Always load alongside this skill. All Workfront extensions are App Builder apps with a React/Spectrum frontend. Use it for component building, IMS token handling, calling backend actions, and any UI work inside `web-src/`.

@@ -22,6 +22,23 @@ Backend specialist for Adobe App Builder actions (OpenWhisk serverless functions
 - **ERROR_HANDLING.md** — Load when implementing error responses, 4xx/5xx mapping, or the errorResponse() utility pattern
 - **IO_EVENTS.md** — Load when integrating with I/O Events, State, Files, or external services from an action
 
+## Constitution & Impl-Log
+
+> Skip any file below that does not exist in this project — not all projects use all layers.
+
+### Design Principles (read-only, if `docs/design-principles/` exists)
+- `docs/design-principles/architecture.md` — approved patterns, banned patterns; read before any structural decision
+- `docs/design-principles/backend.md` — handler structure, error patterns, service boundaries; read before writing implementation code
+
+### Impl-Log (if `docs/impl-log/` exists)
+**Before implementing:**
+- Read `docs/impl-log/backend/index.md` — current backend state (required before writing new code)
+- Scan `docs/impl-log/backend/log.md` header lines — prior decisions relevant to this task
+
+**At task completion:**
+- Update `docs/impl-log/backend/index.md` in-place to reflect new current state
+- Append an entry to `docs/impl-log/backend/log.md`
+
 ## Core Concepts
 
 - Actions are stateless, exported as `module.exports = { main }` (CommonJS) or `export async function main` (TypeScript)
