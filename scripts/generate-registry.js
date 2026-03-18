@@ -50,7 +50,7 @@ for (const folder of folders) {
     const raw = fs.readFileSync(skillMdPath, 'utf8')
     const parsed = matter(raw)
 
-    const { name, description } = parsed.data
+    const { name, description, metadata } = parsed.data
 
     if (!name) {
         console.error(`ERROR: Missing required frontmatter field 'name' in ${folder}/SKILL.md`)
@@ -60,6 +60,8 @@ for (const folder of folders) {
         console.error(`ERROR: Missing required frontmatter field 'description' in ${folder}/SKILL.md`)
         process.exit(1)
     }
+
+    const extensionPoints = metadata?.extensionPoints || []
 
     // Collect reference files
     const refsDir = path.join(SKILLS_DIR, folder, 'references')
@@ -80,6 +82,7 @@ for (const folder of folders) {
         name,
         description,
         folder,
+        extensionPoints,
         body: parsed.content.trim(),
         references
     })

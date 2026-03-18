@@ -248,6 +248,23 @@ No contribution is too small. A single well-written reference file can save hour
 
 ---
 
+## Related: Agentic Dev Team Framework
+
+This MCP server is designed to work alongside the **[Cursor Agentic Dev Team](https://github.com/davidbenge/cursor_ext_agentic_dev-team)** framework — a production-grade multi-persona AI workflow for Cursor that brings structure to the full SDLC.
+
+Together they form a complete end-to-end agentic development experience:
+
+| Layer | Repo | What it provides |
+|-------|------|-----------------|
+| **Knowledge** | This repo (`adobe-extensibility-mcp`) | Domain-specific Adobe patterns served on demand via MCP — the right code guidance at the right moment |
+| **Process** | [`cursor_ext_agentic_dev-team`](https://github.com/davidbenge/cursor_ext_agentic_dev-team) | Named AI personas, slash-command pipelines, and structured workflows that orchestrate planning, implementation, review, and logging |
+
+**How they work together:** The agentic dev team framework wires up named personas (Architect, Dev Lead, Security Expert, etc.) that collaborate through structured `/plan`, `/dev`, and `/epic` command pipelines. Each domain specialist persona is configured to pull from this MCP server — so when the App Builder developer persona starts implementing a Runtime action, it automatically loads the `app-builder-actions` skill with the correct patterns before writing a line of code.
+
+The result: AI agents that follow a real team's workflow *and* have the right technical knowledge to execute it correctly.
+
+---
+
 ## License
 
 MIT
