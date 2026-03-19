@@ -54,7 +54,7 @@ API specialist for Workfront Custom Forms (Category/Parameter objects). Applies 
 - **Version:** Always specify `v21.0` explicitly in production
 - **Category = Custom Form** — `category` endpoint, not `form`
 - **Parameter = Custom Field** — individual fields within a form
-- **parameterValues:** available on ANY object with a custom form attached; key format is `DE:{field label}`
+- **parameterValues:** available on ANY object with a custom form attached; key format is `DE:{field name}`
 - **Object scope:** Custom forms apply to TASK, OPTASK, PROJ, USER, PORT, PRGM, and other types — not just tasks/issues
 - **Pagination:** `$$FIRST=0&$$LIMIT=100` (max 2000 per request)
 
