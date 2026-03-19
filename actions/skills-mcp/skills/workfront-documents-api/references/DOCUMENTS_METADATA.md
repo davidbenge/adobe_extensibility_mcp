@@ -10,9 +10,6 @@
 | `objID` | string | ID of the linked object |
 | `currentVersionID` | string | ID of the current DOCV version |
 | `downloadURL` | string | URL to download the current version |
-| `fileExtension` | string | File extension (pdf, docx, etc.) |
-| `fileSize` | number | File size in bytes |
-| `createdDate` | datetime | When document was created |
 | `lastUpdateDate` | datetime | When document was last updated |
 
 ## Get Document with Version Details
@@ -25,10 +22,10 @@ GET /attask/api/v21.0/document/{id}?fields=*,currentVersion:*
 
 ```http
 # All documents on a project
-GET /attask/api/v21.0/document/search?docObjCode=PROJ&objID={projectId}&fields=name,fileExtension,fileSize,downloadURL
+GET /attask/api/v21.0/project/{id}?fields=documents:*
 
 # All documents on a task
-GET /attask/api/v21.0/document/search?docObjCode=TASK&objID={taskId}&fields=name,fileExtension,downloadURL
+GET /attask/api/v21.0/task/{id}?fields=documents:*
 ```
 
 ## Download a Document
@@ -40,16 +37,16 @@ GET /attask/api/v21.0/document/search?docObjCode=TASK&objID={taskId}&fields=name
 async function downloadDocument(documentId, token, domain) {
     // Step 1: Get document metadata including downloadURL
     const metaRes = await fetch(
-        `https://${domain}.my.workfront.com/attask/api/v21.0/document/${documentId}?fields=downloadURL,name,fileExtension`,
+        `https://${domain}.my.workfront.com/attask/api/v21.0/document/${documentId}?fields=downloadURL,name,currentVersion:ext`,
         { headers: { 'Authorization': `Bearer ${token}` } }
     )
     const { data: doc } = await metaRes.json()
 
     // Step 2: Download the file
-    const fileRes = await fetch(doc.downloadURL, {
+    const fileRes = await fetch(`https://${domain}.my.workfront.com${doc.downloadURL}`, {
         headers: { 'Authorization': `Bearer ${token}` }
     })
-    return { buffer: await fileRes.arrayBuffer(), fileName: doc.name, extension: doc.fileExtension }
+    return { buffer: await fileRes.arrayBuffer(), fileName: doc.name, extension: doc.currentVersion.ext }
 }
 ```
 
@@ -58,8 +55,12 @@ async function downloadDocument(documentId, token, domain) {
 v21 added a `getTemporaryCloudURL` action for generating short-lived download URLs:
 
 ```http
-PUT /attask/api/v21.0/document/{id}?action=getTemporaryCloudURL
+PUT /attask/api/v21.0/document?action=getTemporaryCloudURL
 Authorization: Bearer {token}
+Content-Type: application/json
+{
+    "documentVersionID":"{id}"
+}
 ```
 
 Response includes a time-limited URL that does not require Bearer token — useful for sharing.
@@ -67,7 +68,7 @@ Response includes a time-limited URL that does not require Bearer token — usef
 ## Move Document to Different Object
 
 ```http
-PUT /attask/api/v21.0/document/{id}
+PUT /attask/api/v21.0/document/{id}?action=move
 Content-Type: application/json
 
 {
