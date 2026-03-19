@@ -7,13 +7,13 @@ Document folders organize documents within Workfront. Each folder is scoped to a
 ## List Document Folders
 
 ```http
-GET /attask/api/v21.0/docfdr/search?fields=name,objID,docObjCode,parentID
+GET /attask/api/v21.0/docfdr/search?fields=*
 ```
 
 ## List Folders on a Specific Object
 
 ```http
-GET /attask/api/v21.0/docfdr/search?docObjCode=PROJ&objID={projectId}&fields=name,parentID
+GET /attask/api/v21.0/docfdr/search?fields=*&projectID={id}
 ```
 
 ## DOCFDR Fields
@@ -22,9 +22,10 @@ GET /attask/api/v21.0/docfdr/search?docObjCode=PROJ&objID={projectId}&fields=nam
 |-----------|------|-------------|
 | `ID` | string | Folder ID (GUID) |
 | `name` | string | Folder name |
-| `docObjCode` | string | Object type folder is scoped to |
-| `objID` | string | ID of the scoped object |
 | `parentID` | string | Parent folder ID (null if top-level) |
+
+The type of object a folder is associated with is determined by the object type ID field being populated.
+For example, a folder that exists on a project will have a value for `projectID`. A task level folder will have a `taskID`, and so on. More than one object ID will not be populated simultaneously.
 
 ## External Document Integrations
 
