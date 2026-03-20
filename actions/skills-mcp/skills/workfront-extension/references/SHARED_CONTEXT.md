@@ -19,7 +19,7 @@ When Workfront loads your extension's view iframe, it passes contextual data thr
 | `auth` | `{ imsToken: string }` | IMS Bearer token for the current user |
 | `objCode` | `string` | Workfront object type code of the current page |
 | `objID` | `string` | UUID of the current Workfront object |
-| `hostname` | `string` | Workfront hostname (e.g. `company.my.workfront.com`) |
+| `hostname` | `string` | Workfront hostname (e.g. `<workfront_host>`) |
 | `user` | `{ ID: string, email: string }` | Current logged-in user |
 | `host` | `object` | Additional host context (structure may vary) |
 

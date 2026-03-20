@@ -60,7 +60,7 @@ const FormData = require('form-data')
 const fs = require('fs')
 
 async function uploadDocument({ filePath, fileName, docObjCode, objId }, token, domain) {
-    const base = `https://${domain}.my.workfront.com/attask/api/v21.0`
+    const base = `https://${workfront_host}/attask/api/v21.0`
 
     // Step 1: Upload file
     const form = new FormData()

@@ -55,7 +55,7 @@ GET /attask/api/v21.0/category/search?objCodes=PROJ&fields=name,description
 ```javascript
 async function getFormSchema(categoryId, token, domain) {
     const res = await fetch(
-        `https://${domain}.my.workfront.com/attask/api/v21.0/category/${categoryId}?fields=name,parameterGroups:parameterGroup:categoryParameters:parameter:name,parameter:label,parameter:dataType,parameter:displayType,parameter:isRequired,parameter:possibleValues`,
+        `https://${workfront_host}/attask/api/v21.0/category/${categoryId}?fields=name,parameterGroups:parameterGroup:categoryParameters:parameter:name,parameter:label,parameter:dataType,parameter:displayType,parameter:isRequired,parameter:possibleValues`,
         { headers: { 'Authorization': `Bearer ${token}` } }
     )
     const data = await res.json()

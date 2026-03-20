@@ -65,3 +65,11 @@ GET /attask/api/v21.0/task/{id}?fields=*,parent:name,children[ID,name,status]
 # Subtasks for a parent task
 GET /attask/api/v21.0/task/search?parentID={parentId}&fields=name,status,percentComplete,assignedTo:name
 ```
+
+## Task Object Reference URL
+
+To retrieve the complete structure of the Task object — including all fields, references, collections, actions, search parameters, and supported operations — fetch the following metadata URL:
+
+```
+https://testdrive.testdrive.workfront.com/attask/api/v21.0/task/metadata
+```

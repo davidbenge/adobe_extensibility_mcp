@@ -86,7 +86,7 @@ async function processEventAsync(payload) {
 ```javascript
 async function listSubscriptions(apiToken, domain) {
     const res = await fetch(
-        `https://${domain}.my.workfront.com/attask/eventsubscription/api/v1/subscriptions`,
+        `https://${workfront_host}/attask/eventsubscription/api/v1/subscriptions`,
         { headers: { 'Authorization': `Bearer ${apiToken}` } }
     )
     const subs = await res.json()

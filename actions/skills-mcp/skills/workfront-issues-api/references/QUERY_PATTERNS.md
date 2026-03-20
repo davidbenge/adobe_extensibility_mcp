@@ -45,14 +45,15 @@ GET /attask/api/v21.0/issue/search?projectID=proj-a&OR:1:assignedTo:ID=user-id-b
 
 ## Sorting and Pagination
 
+Sort by appending `{fieldName}_Sort=asc` or `{fieldName}_Sort=desc` as a parameter.
+
 ```http
 GET /attask/api/v21.0/issue/search
     ?projectID=proj-id
     &fields=name,status,priority,assignedTo:name
     &$$LIMIT=50
     &$$FIRST=0
-    &$$ORDERBY=priority
-    &$$ORDERDIR=ASC
+    &entryDate_Sort=asc
 ```
 
 ## JavaScript Helper
@@ -62,16 +63,14 @@ async function searchIssues({ projectId, status, severity, unassigned, limit = 5
     const params = new URLSearchParams({
         fields: 'name,status,priority,severity,assignedTo:name,plannedCompletionDate,referenceNumber',
         $$LIMIT: limit,
-        $$FIRST: offset,
-        $$ORDERBY: 'priority',
-        $$ORDERDIR: 'ASC'
+        $$FIRST: offset
     })
     if (projectId) params.set('projectID', projectId)
     if (status) { params.set('status', Array.isArray(status) ? status.join(',') : status); params.set('status_Mod', 'in') }
     if (severity) params.set('severity', severity)
     if (unassigned) { params.set('assignedToID', ''); params.set('assignedToID_Mod', 'isblank') }
 
-    const url = `https://${domain}.my.workfront.com/attask/api/v21.0/issue/search?${params}`
+    const url = `https://${workfront_host}/attask/api/v21.0/issue/search?${params}`
     const response = await fetch(url, { headers: { 'Authorization': `Bearer ${token}` } })
     const data = await response.json()
     return data.data

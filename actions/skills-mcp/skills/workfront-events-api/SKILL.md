@@ -47,7 +47,7 @@ Specialist for Workfront Event Subscriptions — the push/webhook notification s
 ## Core Concepts
 
 - **Different endpoint:** Event Subscriptions use a different base URL:
-  `https://<instance>.my.workfront.com/attask/eventsubscription/api/v1/subscriptions`
+  `https://<workfront_host>/attask/eventsubscription/api/v1/subscriptions`
   (NOT the standard REST API endpoint)
 - **Push, not poll:** Workfront pushes payloads to your webhook URL on object change
 - **5-second rule:** Your webhook handler MUST respond within 5 seconds — do all heavy processing async

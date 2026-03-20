@@ -1,9 +1,9 @@
-# Workfront Issues API — Status Transitions
+# Workfront Tasks API — Status Transitions
 
-## Updating Issue Status
+## Updating Task Status
 
 ```http
-PUT /attask/api/v21.0/issue/{id}
+PUT /attask/api/v21.0/task/{id}
 Content-Type: application/json
 Authorization: Bearer {token}
 
@@ -28,17 +28,17 @@ CPL → RPN (re-opened)
 To retrieve all available statuses — including native and custom statuses configured in the system — use the following query:
 
 ```http
-GET /attask/api/v21.0/CSTEM/search?fields=*&enumClass=STATUS_OPTASK
+GET /attask/api/v21.0/CSTEM/search?fields=*&enumClass=STATUS_TASK
 ```
 
-Each result includes a `value` field which is the code to use when setting `status` on an issue:
+Each result includes a `value` field which is the code to use when setting `status` on a task:
 
 ```json
 {
     "data": [
-        { "label": "New", "value": "NEW", "enumClass": "STATUS_OPTASK" },
-        { "label": "In Progress", "value": "INP", "enumClass": "STATUS_OPTASK" },
-        { "label": "My Custom Status", "value": "CST", "enumClass": "STATUS_OPTASK" }
+        { "label": "New", "value": "NEW", "enumClass": "STATUS_TASK" },
+        { "label": "In Progress", "value": "INP", "enumClass": "STATUS_TASK" },
+        { "label": "My Custom Status", "value": "CST", "enumClass": "STATUS_TASK" }
     ]
 }
 ```
@@ -46,7 +46,7 @@ Each result includes a `value` field which is the code to use when setting `stat
 Use the `value` field directly when updating status:
 
 ```http
-PUT /attask/api/v21.0/issue/{id}
+PUT /attask/api/v21.0/task/{id}
 Content-Type: application/json
 
 {
@@ -56,10 +56,10 @@ Content-Type: application/json
 
 ## Status with Resolution
 
-When closing an issue, set status and optional resolution together:
+When closing a task, set status and optional resolution together:
 
 ```http
-PUT /attask/api/v21.0/issue/{id}
+PUT /attask/api/v21.0/task/{id}
 Content-Type: application/json
 
 {
@@ -71,8 +71,8 @@ Content-Type: application/json
 Or close without a resolving object:
 
 ```javascript
-async function closeIssue(issueId, resolution, token, domain) {
-    const response = await fetch(`https://${workfront_host}/attask/api/v21.0/issue/${issueId}`, {
+async function closeTask(taskId, resolution, token) {
+    const response = await fetch(`https://${workfront_host}/attask/api/v21.0/task/${taskId}`, {
         method: 'PUT',
         headers: {
             'Authorization': `Bearer ${token}`,
@@ -92,9 +92,9 @@ async function closeIssue(issueId, resolution, token, domain) {
 Always check for errors — Workfront returns an error if a transition is not allowed:
 
 ```javascript
-async function safeStatusUpdate(issueId, newStatus, token, domain) {
+async function safeStatusUpdate(taskId, newStatus, token) {
     const response = await fetch(
-        `https://${workfront_host}/attask/api/v21.0/issue/${issueId}`,
+        `https://${workfront_host}/attask/api/v21.0/task/${taskId}`,
         {
             method: 'PUT',
             headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
@@ -111,4 +111,4 @@ async function safeStatusUpdate(issueId, newStatus, token, domain) {
 
 ## Approvals
 
-For issue approvals, load the **workfront-approvals-api** skill.
+For task approvals, load the **workfront-approvals-api** skill.

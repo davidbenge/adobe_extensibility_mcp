@@ -33,7 +33,7 @@ async function bootstrap() {
 
 ```javascript
 async function callWorkfrontAPI(endpoint, token, orgId) {
-    const response = await fetch(`https://your-domain.my.workfront.com/attask/api/v18.0/${endpoint}`, {
+    const response = await fetch(`https://${workfront_host}/attask/api/v18.0/${endpoint}`, {
         headers: {
             'Authorization': `Bearer ${token}`,
             'X-Gw-Ims-Org-Id': orgId,
