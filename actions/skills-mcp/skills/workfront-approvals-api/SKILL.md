@@ -1,15 +1,17 @@
 ---
 name: workfront-approvals-api
 description: >
-  Use for Workfront Unified Approvals: creating and managing document/asset review
-  and approval workflows, adding reviewers and approvers, tracking approval status
-  and individual decisions, setting deadlines, using approval templates, and
-  understanding the approval status model. Also covers legacy approval process
-  actions (approveApproval, recallApproval, rejectApproval) on work items.
+  Use for Workfront Universal Approval Service (UAS): creating and managing document
+  review and approval workflows, adding reviewers and approvers, tracking approval
+  status and individual decisions, setting deadlines, using approval templates, and
+  multi-stage approval sequences. The UAS applies to Document approvals only — NOT
+  projects, tasks, or issues (those use the legacy work item approval system).
   Trigger phrases: approval workflow, document approval, add reviewer, add approver,
   approval status, approval decision, approve document, needs work, unified approvals,
-  approval template, approval deadline, review asset, approval stage.
-  Do NOT use for proofing workflows (separate Workfront Proof API) or
+  universal approval service, approval template, approval deadline, review asset,
+  approval stage.
+  Do NOT use for proofing workflows (separate Workfront Proof API),
+  project/task/issue approvals (legacy system), or
   Event Subscriptions (use workfront-events-api).
 metadata:
   author: adobe-enterprise-architecture
@@ -19,16 +21,26 @@ metadata:
 # Workfront Approvals API
 
 ## Role
-Specialist for Workfront Unified Approvals — the document and asset review/approval system. Knows the approval status model, participant roles, decision values, template usage, reporting structure, and how the Unified Approvals API differs from both legacy approvals and proofing.
+Specialist for the Workfront Universal Approval Service (UAS) — document-only review and approval workflows. Knows the UAS API structure, authentication requirements, approval status model, participant roles, decision values, template usage, and multi-stage workflows. The UAS is separate from both the standard Workfront REST API and the legacy work item approval system.
 
 ## When to Load References
 
+### Universal Approval Service (Documents)
+
 | Task | Load |
 |------|------|
-| Understand the approval system, objects, and auth | APPROVALS_OVERVIEW.md |
-| Add reviewers/approvers, manage participants | APPROVALS_PARTICIPANTS.md |
-| Read or interpret approval status and decisions | APPROVALS_STATUS_AND_DECISIONS.md |
-| Create/use templates, set deadlines, multi-stage | APPROVALS_TEMPLATES_AND_STAGES.md |
+| Understand the UAS system, objects, auth, and scope | UNIVERSAL_APPROVAL_SERVICE_OVERVIEW.md |
+| Create or update an approval, use templates, lock/unlock stages | UAS_TEMPLATES_AND_STAGES.md |
+| Add or remove reviewers and approvers | UAS_PARTICIPANTS.md |
+| Read or interpret approval status and decisions; make a decision | UAS_STATUS_AND_DECISIONS.md |
+
+### Object Approvals (Projects, Tasks, Issues)
+
+| Task | Load |
+|------|------|
+| Understand object approval workflows, supported objects, fields | OBJECT_APPROVALS_OVERVIEW.md |
+| Approve, reject, or recall an approval on a project/task/issue | OBJECT_APPROVALS_ACTIONS.md |
+| Find approval process IDs, attach processes, query approver status | OBJECT_APPROVALS_PROCESSES.md |
 
 ## Constitution & Impl-Log
 
@@ -49,18 +61,30 @@ Specialist for Workfront Unified Approvals — the document and asset review/app
 
 ## Core Concepts
 
-- **Unified Approvals** is a separate API from the standard Workfront REST API — different base URL and auth model
+- **Documents only** — the UAS applies to Document Version (`DOCV`) approvals only; project/task/issue approvals use the legacy system
+- **Separate API** — different base URL and auth model from the standard Workfront REST API (`/attask/api/`)
 - **Two participant roles:** Reviewers (feedback only) vs. Approvers (binding decisions required)
-- **Status is calculated** — overall approval status rolls up from all participant decisions; highest-priority "worst" decision wins
-- **Not proofing:** Unified Approvals participants appear in the Document Summary pane, NOT the proofing workflow tab; SOCD data is proofing-only
-- **Frame.io integration:** "Approved with changes" decision is NOT supported in the Frame.io integration
+- **Status is calculated** — overall approval status rolls up from all participant decisions; "worst" decision wins (`NEEDS_WORK` > `APPROVED_WITH_CHANGES` > `APPROVED`)
+- **Version-specific** — each approval is tied to a specific document version; new version requires a new approval
+- **Not proofing:** UAS participants appear in the Document Summary pane, NOT the proofing workflow tab; SOCD data is proofing-only
+- **Frame.io integration:** `APPROVED_WITH_CHANGES` decision is NOT supported in the Frame.io integration
 - **Auth:** Adobe IMS OAuth 2.0 Server-to-Server via Adobe Developer Console (technical account auto-created in Workfront)
 
 ## Quick Reference
 
+**Document approvals (UAS):**
+
 | Task | Load |
 |------|------|
-| API overview, objects, base URL, auth | APPROVALS_OVERVIEW.md |
-| Add/remove reviewers and approvers | APPROVALS_PARTICIPANTS.md |
-| Approval status values and decision rollup | APPROVALS_STATUS_AND_DECISIONS.md |
-| Templates, deadlines, approval stages | APPROVALS_TEMPLATES_AND_STAGES.md |
+| UAS overview, objects, base URL, auth | UNIVERSAL_APPROVAL_SERVICE_OVERVIEW.md |
+| Create or update an approval, templates, lock/unlock | UAS_TEMPLATES_AND_STAGES.md |
+| Add/remove reviewers and approvers | UAS_PARTICIPANTS.md |
+| Approval status values, decision rollup, make a decision | UAS_STATUS_AND_DECISIONS.md |
+
+**Object approvals (projects/tasks/issues):**
+
+| Task | Load |
+|------|------|
+| How object approvals work, supported objects | OBJECT_APPROVALS_OVERVIEW.md |
+| approveApproval / rejectApproval / recallApproval actions | OBJECT_APPROVALS_ACTIONS.md |
+| Approval process IDs, attach processes, approver status | OBJECT_APPROVALS_PROCESSES.md |

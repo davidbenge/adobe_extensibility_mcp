@@ -29,6 +29,18 @@ Custom form fields use the `DE:` prefix followed by the field label.
 
 ## Writing Custom Form Data
 
+Custom field values can be set two equivalent ways — directly as top-level fields or nested in `parameterValues`:
+
+```http
+PUT /attask/api/v21.0/task/{id}
+Content-Type: application/json
+
+{
+    "DE:Risk Level": "Medium",
+    "DE:Story Points": "8"
+}
+```
+
 ```http
 PUT /attask/api/v21.0/task/{id}
 Content-Type: application/json
@@ -38,6 +50,34 @@ Content-Type: application/json
         "DE:Risk Level": "Medium",
         "DE:Story Points": "8"
     }
+}
+```
+
+A `categoryID` must be provided when writing custom field values. Use a single value or an array of category objects:
+
+```http
+PUT /attask/api/v21.0/task/{id}
+Content-Type: application/json
+
+{
+    "categoryID": "5e7bb46701272381d25674d88f958e89",
+    "DE:Risk Level": "Medium"
+}
+```
+
+To attach multiple forms at once, use `objectCategories`:
+
+```http
+PUT /attask/api/v21.0/task/{id}
+Content-Type: application/json
+
+{
+    "objectCategories": [
+        { "categoryID": "5e7bb46701272381d25674d88f958e89", "categoryOrder": 0, "objCode": "CTGY" },
+        { "categoryID": "5755c21100548959f37973f394e99c2f", "categoryOrder": 1, "objCode": "CTGY" }
+    ],
+    "DE:Risk Level": "Medium",
+    "DE:Story Points": "8"
 }
 ```
 

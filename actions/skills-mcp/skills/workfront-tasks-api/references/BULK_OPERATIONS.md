@@ -24,7 +24,7 @@ Authorization: Bearer {token}
 async function bulkUpdateTaskStatus(taskIds, newStatus, token, domain) {
     const updates = taskIds.map(id => ({ ID: id, status: newStatus }))
 
-    const response = await fetch(`https://${domain}.my.workfront.com/attask/api/v21.0/task`, {
+    const response = await fetch(`https://${workfront_host}/attask/api/v21.0/task`, {
         method: 'PUT',
         headers: {
             'Authorization': `Bearer ${token}`,
@@ -49,17 +49,6 @@ Content-Type: application/json
         { "name": "Task 1", "projectID": "proj-id", "plannedStartDate": "2025-01-15" },
         { "name": "Task 2", "projectID": "proj-id", "parentID": "parent-task-id" }
     ]
-}
-```
-
-## Bulk Delete
-
-```http
-DELETE /attask/api/v21.0/task
-Content-Type: application/json
-
-{
-    "IDs": ["task-id-1", "task-id-2", "task-id-3"]
 }
 ```
 

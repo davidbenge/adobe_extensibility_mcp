@@ -10,7 +10,7 @@ Same 2-step pattern as initial upload, but POST to `/docv` in step 2:
 
 ```javascript
 async function uploadNewVersion({ documentId, filePath, fileName }, token, domain) {
-    const base = `https://${domain}.my.workfront.com/attask/api/v21.0`
+    const base = `https://${workfront_host}/attask/api/v21.0`
 
     // Step 1: Upload file to get handle
     const form = new FormData()

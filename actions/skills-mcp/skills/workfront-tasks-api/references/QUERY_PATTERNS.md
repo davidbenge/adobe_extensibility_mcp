@@ -32,20 +32,19 @@ Common modifiers: `eq` (default), `ne`, `gt`, `gte`, `lt`, `lte`, `in`, `notin`,
 
 ## Sorting and Pagination
 
+Sort by appending `{fieldName}_Sort=asc` or `{fieldName}_Sort=desc` as a parameter.
+
 ```http
 GET /attask/api/v21.0/task/search
     ?projectID=proj-id
     &fields=name,status,plannedCompletionDate
     &$$LIMIT=50
     &$$FIRST=0
-    &$$ORDERBY=plannedCompletionDate
-    &$$ORDERDIR=ASC
+    &entryDate_Sort=asc
 ```
 
 - `$$LIMIT`: page size (max 2000)
 - `$$FIRST`: offset (0-based)
-- `$$ORDERBY`: field to sort
-- `$$ORDERDIR`: ASC or DESC
 
 ## OR Queries
 
@@ -67,10 +66,17 @@ GET /attask/api/v21.0/task/search?project:status=CUR&fields=name,project:name
 ## Count Only
 
 ```http
-GET /attask/api/v21.0/task/search?projectID=proj-id&$$LIMIT=0
+GET /attask/api/v21.0/task/count?projectID=proj-id&$$LIMIT=0
 ```
 
-Returns `totalCount` in response headers.
+Returns:
+```json
+{
+  "data": {
+    "count": 365 
+  }
+}
+```
 
 ## JavaScript Pattern
 
@@ -79,15 +85,13 @@ async function searchTasks({ projectId, status, assigneeId, limit = 50, offset =
     const params = new URLSearchParams({
         fields: 'name,status,percentComplete,assignedTo:name,plannedCompletionDate',
         $$LIMIT: limit,
-        $$FIRST: offset,
-        $$ORDERBY: 'plannedCompletionDate',
-        $$ORDERDIR: 'ASC'
+        $$FIRST: offset
     })
     if (projectId) params.set('projectID', projectId)
     if (status) { params.set('status', status); params.set('status_Mod', 'in') }
     if (assigneeId) params.set('assignedTo:ID', assigneeId)
 
-    const url = `https://${domain}.my.workfront.com/attask/api/v21.0/task/search?${params}`
+    const url = `https://${workfront_host}/attask/api/v21.0/task/search?${params}`
     const response = await fetch(url, {
         headers: { 'Authorization': `Bearer ${token}` }
     })

@@ -27,6 +27,7 @@ API specialist for Workfront Task (TASK) objects. Knows field names, status code
 | Batch update or batch create tasks | BULK_OPERATIONS.md |
 | Read/write custom form data on tasks | CUSTOM_FORMS.md |
 | Build complex task queries | QUERY_PATTERNS.md |
+| Assign tasks to users or teams | ASSIGNMENTS.md |
 
 ## Constitution & Impl-Log
 
@@ -47,21 +48,12 @@ API specialist for Workfront Task (TASK) objects. Knows field names, status code
 
 ## Core Concepts
 
-- **Base URL:** `https://<instance>.my.workfront.com/attask/api/v21.0/`
+- **Base URL:** `https://<workfront_host>/attask/api/v21.0/`
 - **Auth:** `Authorization: Bearer <token>` (OAuth2 recommended)
 - **Version:** Always specify `v21.0` explicitly in production
 - **objCode:** `TASK` — endpoint is `/task`
-- **Write ops:** Include `sessionID` header for CSRF, or use OAuth2 Bearer token (covers CSRF)
 - **Field selection:** `fields=*` or `fields=ID,name,status` to control response size
 - **Pagination:** `$$FIRST=0&$$LIMIT=100` (max 2000 per request)
 - **Filter modifiers:** append `_Mod=eq|ne|gt|gte|lt|lte|contains|in|cicontains` to field param
 - **Custom form values:** `DE:{field label}` key format in `parameterValues`
 
-## Quick Reference
-
-| Task | Reference |
-|------|-----------|
-| Know task field names | TASK_FIELDS.md |
-| Batch update tasks | BULK_OPERATIONS.md |
-| Read/write custom form data on tasks | CUSTOM_FORMS.md |
-| Build complex task queries | QUERY_PATTERNS.md |

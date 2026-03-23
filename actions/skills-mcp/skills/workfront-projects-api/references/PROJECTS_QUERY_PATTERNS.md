@@ -40,14 +40,15 @@ GET /attask/api/v21.0/proj/search?portfolioID=port-id-a&OR:1:ownerID=user-id-b&f
 
 ## Sorting and Pagination
 
+Sort by appending `{fieldName}_Sort=asc` or `{fieldName}_Sort=desc` as a parameter.
+
 ```http
 GET /attask/api/v21.0/proj/search
     ?status=CUR
     &fields=name,status,percentComplete,plannedCompletionDate
     &$$LIMIT=50
     &$$FIRST=0
-    &$$ORDERBY=plannedCompletionDate
-    &$$ORDERDIR=ASC
+    &entryDate_Sort=asc
 ```
 
 ## Expand Task Collection Inline
@@ -63,15 +64,13 @@ async function searchProjects({ status, ownerId, portfolioId, limit = 50, offset
     const params = new URLSearchParams({
         fields: 'name,status,condition,percentComplete,owner:name,plannedCompletionDate',
         $$LIMIT: limit,
-        $$FIRST: offset,
-        $$ORDERBY: 'plannedCompletionDate',
-        $$ORDERDIR: 'ASC'
+        $$FIRST: offset
     })
     if (status) { params.set('status', status); params.set('status_Mod', 'in') }
     if (ownerId) params.set('ownerID', ownerId)
     if (portfolioId) params.set('portfolioID', portfolioId)
 
-    const url = `https://${domain}.my.workfront.com/attask/api/v21.0/proj/search?${params}`
+    const url = `https://${workfront_host}/attask/api/v21.0/proj/search?${params}`
     const response = await fetch(url, { headers: { 'Authorization': `Bearer ${token}` } })
     const data = await response.json()
     return data.data

@@ -6,7 +6,6 @@
 Portfolio (PORT)
   └── Program (PRGM)
         └── Project (PROJ)
-              └── Milestone Path (MPATH) — applied to project
 ```
 
 ## Portfolio → Program → Project Rules
@@ -43,7 +42,7 @@ Content-Type: application/json
 ## List Projects in a Portfolio
 
 ```http
-GET /attask/api/v21.0/proj/search?portfolioID={portId}&fields=name,status,percentComplete&$$ORDERBY=name
+GET /attask/api/v21.0/proj/search?portfolioID={portId}&fields=name,status,percentComplete
 ```
 
 ## List Projects in a Program
@@ -67,14 +66,14 @@ Content-Type: application/json
 
 List available milestone paths:
 ```http
-GET /attask/api/v21.0/mpath/search?fields=name,milestones:name&$$ORDERBY=name
+GET /attask/api/v21.0/mpath/search?fields=name,milestones:name
 ```
 
 ## Full Node.js Example: Create Project in a Program
 
 ```javascript
 async function createProjectInProgram({ name, programId, ownerId, startDate, endDate }, token, domain) {
-    const res = await fetch(`https://${domain}.my.workfront.com/attask/api/v21.0/proj`, {
+    const res = await fetch(`https://${workfront_host}/attask/api/v21.0/proj`, {
         method: 'POST',
         headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -96,7 +95,7 @@ async function createProjectInProgram({ name, programId, ownerId, startDate, end
 
 ```javascript
 async function applyMilestonePath(projectId, milestonePathId, token, domain) {
-    const res = await fetch(`https://${domain}.my.workfront.com/attask/api/v21.0/proj/${projectId}`, {
+    const res = await fetch(`https://${workfront_host}/attask/api/v21.0/proj/${projectId}`, {
         method: 'PUT',
         headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
         body: JSON.stringify({ milestonePathID: milestonePathId })
