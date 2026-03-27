@@ -22,20 +22,19 @@ async function main(params) {
 
 ## State Store Integration
 
+> **Load STATE_STORE.md** for Adobe key rules (charset, 1024-byte limit) and why values must be **string or binary**—never pass a raw object.
+
 ```javascript
 const { init: initState } = require('@adobe/aio-lib-state')
 
 async function main(params) {
     const state = await initState()
 
-    // Read
     const result = await state.get('my-key')
     const value = result?.value ? JSON.parse(result.value) : null
 
-    // Write (TTL in seconds; max 365 days = 31536000)
     await state.put('my-key', JSON.stringify(data), { ttl: 86400 })
 
-    // Delete
     await state.delete('my-key')
 }
 ```
