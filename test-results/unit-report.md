@@ -15,7 +15,7 @@ _2026-03-27 16:32:42 UTC_
 ### errorResponse
 
 - ✅ (400, errorMessage) _(1ms)_
-- ✅ (400, errorMessage, logger) _(1ms)_
+- ✅ (400, errorMessage, logger) _(2ms)_
 
 ### stringParameters
 

@@ -65,3 +65,11 @@ Issues/Requests use objCode `OPTASK`. The API endpoint is `/issue` but the objec
 | `BUG_SEVERITY_3` | Workaround Available |
 | `BUG_SEVERITY_4` | No Workaround |
 | `BUG_SEVERITY_5` | Fatal |
+
+## Issue Object Reference URL
+
+To retrieve the complete structure of the Issue object — including all fields, references, collections, actions, search parameters, and supported operations — fetch the following metadata URL:
+
+```
+https://testdrive.testdrive.workfront.com/attask/api/v21.0/optask/metadata
+```

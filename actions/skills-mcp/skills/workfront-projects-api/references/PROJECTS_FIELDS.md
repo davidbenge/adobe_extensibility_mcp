@@ -62,3 +62,11 @@ Note: Condition is only writable when `conditionType` is `manual`.
 ```http
 GET /attask/api/v21.0/proj/{id}?fields=name,status,condition,percentComplete,owner:name,portfolio:name,program:name,plannedStartDate,plannedCompletionDate
 ```
+
+## Project Object Reference URL
+
+To retrieve the complete structure of the Project object — including all fields, references, collections, actions, search parameters, and supported operations — fetch the following metadata URL:
+
+```
+https://testdrive.testdrive.workfront.com/attask/api/v21.0/project/metadata
+```

@@ -5,24 +5,58 @@
 Event Subscriptions use a DIFFERENT base URL than the REST API:
 
 ```
-POST https://<instance>.my.workfront.com/attask/eventsubscription/api/v1/subscriptions
-GET  https://<instance>.my.workfront.com/attask/eventsubscription/api/v1/subscriptions
-DELETE https://<instance>.my.workfront.com/attask/eventsubscription/api/v1/subscriptions/{id}
+POST https://<workfront_host>/attask/eventsubscription/api/v1/subscriptions
+GET  https://<workfront_host>/attask/eventsubscription/api/v1/subscriptions
+DELETE https://<workfront_host>/attask/eventsubscription/api/v1/subscriptions/{id}
 ```
 
 ## Create a Subscription
 
 CRITICAL: Include ONLY required fields — extra fields cause failures.
 
+### Supported Object Types
+
+| Name | objCode |
+|------|---------|
+| Approval | `APPROVAL` |
+| Approval Stage | `ARVSTP` |
+| Approval Stage Participant | |
+| Assignment | `ASSGN` |
+| Company | `CMPY` |
+| Dashboard | `PTLTAB` |
+| Document | `DOCU` |
+| Document Version | `DOCV` |
+| Expense | `EXPNS` |
+| Field | `JRNLF` |
+| Hour | `HOUR` |
+| Issue | `OPTASK` |
+| Note | `NOTE` |
+| Portfolio | `PORT` |
+| Program | `PRGM` |
+| Project | `PROJ` |
+| Proof Approval | `PRFAPL` |
+| Report | `PTLSEC` |
+| Staffing Plan | |
+| Staffing Plan Parameter Value | |
+| Staffing Plan Resource | |
+| Staffing Plan Resource Attribute Value | |
+| Staffing Plan Resource Attribute Value Set | |
+| Staffing Plan Resource Parameter Value | |
+| Task | `TASK` |
+| Template | `TMPL` |
+| Timesheet | `TSHET` |
+| User | `USER` |
+| Workspace | |
+
 Required fields:
-- `objCode` — Workfront object type (PROJ, TASK, OPTASK, etc.)
+- `objCode` — Workfront object type (see above table)
 - `eventType` — CREATE, UPDATE, DELETE, or "all"
 - `url` — Your webhook endpoint (must be HTTPS, public, no self-signed cert)
 - `authToken` — A secret string you choose; sent as `Authorization` header on delivery
 
 ```bash
 curl -X POST \
-  'https://<instance>.my.workfront.com/attask/eventsubscription/api/v1/subscriptions' \
+  'https://<workfront_host>/attask/eventsubscription/api/v1/subscriptions' \
   -H 'Authorization: Bearer <api-token>' \
   -H 'Content-Type: application/json' \
   -d '{
@@ -39,7 +73,7 @@ const axios = require('axios')
 
 async function createSubscription({ objCode, eventType, url, authToken }, apiToken, domain) {
     const res = await axios.post(
-        `https://${domain}.my.workfront.com/attask/eventsubscription/api/v1/subscriptions`,
+        `${workfront_host}/attask/eventsubscription/api/v1/subscriptions`,
         { objCode, eventType, url, authToken },
         { headers: { 'Authorization': `Bearer ${apiToken}`, 'Content-Type': 'application/json' } }
     )
@@ -51,7 +85,7 @@ async function createSubscription({ objCode, eventType, url, authToken }, apiTok
 
 ```bash
 curl -X GET \
-  'https://<instance>.my.workfront.com/attask/eventsubscription/api/v1/subscriptions' \
+  'https://<workfront_host>/attask/eventsubscription/api/v1/subscriptions' \
   -H 'Authorization: Bearer <api-token>'
 ```
 
@@ -59,7 +93,7 @@ curl -X GET \
 
 ```bash
 curl -X DELETE \
-  'https://<instance>.my.workfront.com/attask/eventsubscription/api/v1/subscriptions/{subscriptionId}' \
+  'https://<workfront_host>/attask/eventsubscription/api/v1/subscriptions/{subscriptionId}' \
   -H 'Authorization: Bearer <api-token>'
 ```
 

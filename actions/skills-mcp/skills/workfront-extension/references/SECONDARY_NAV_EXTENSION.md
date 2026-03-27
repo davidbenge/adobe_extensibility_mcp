@@ -165,7 +165,7 @@ function TaskView() {
     const auth     = conn.sharedContext.get("auth");
     const objCode  = conn.sharedContext.get("objCode");   // 'TASK'
     const objID    = conn.sharedContext.get("objID");     // Workfront UUID
-    const hostname = conn.sharedContext.get("hostname");  // 'company.my.workfront.com'
+    const hostname = conn.sharedContext.get("hostname");  // '<workfront_host>'
     const user     = conn.sharedContext.get("user");      // { ID, email }
 
     setAuthToken(auth.imsToken);

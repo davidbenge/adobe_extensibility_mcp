@@ -34,6 +34,18 @@ The key format is `DE:{field label}` — the `DE:` prefix is always present.
 
 ## Writing parameterValues
 
+Custom field values can be set two equivalent ways — directly as top-level fields or nested in `parameterValues`:
+
+```http
+PUT /attask/api/v21.0/task/{id}
+Content-Type: application/json
+
+{
+    "DE:Risk Level": "Medium",
+    "DE:Story Points": "8"
+}
+```
+
 ```http
 PUT /attask/api/v21.0/task/{id}
 Content-Type: application/json
@@ -41,13 +53,42 @@ Content-Type: application/json
 {
     "parameterValues": {
         "DE:Risk Level": "Medium",
-        "DE:Story Points": "8",
-        "DE:Sprint": "Sprint 24"
+        "DE:Story Points": "8"
     }
 }
 ```
 
 Only include fields you want to change. Other values are preserved.
+
+## Setting the Category (Custom Form) on Write
+
+A `categoryID` must be provided when writing custom field values. Use a single value or an array of category objects:
+
+```http
+PUT /attask/api/v21.0/task/{id}
+Content-Type: application/json
+
+{
+    "categoryID": "5e7bb46701272381d25674d88f958e89",
+    "DE:Risk Level": "Medium"
+}
+```
+
+To attach multiple forms at once, use `objectCategories`:
+
+```http
+PUT /attask/api/v21.0/task/{id}
+Content-Type: application/json
+
+{
+    "objectCategories": [
+        { "categoryID": "5e7bb46701272381d25674d88f958e89", "categoryOrder": 0, "objCode": "CTGY" },
+        { "categoryID": "5755c21100548959f37973f394e99c2f", "categoryOrder": 1, "objCode": "CTGY" }
+    ],
+    "DE:Risk Level": "Medium",
+    "DE:Story Points": "8"
+}
+```
 
 ## Value Formats by Field Type
 
@@ -76,7 +117,7 @@ If you know the field name but not the label (for the `DE:` key):
 ```javascript
 async function getParamLabel(paramName, token, domain) {
     const res = await fetch(
-        `https://${domain}.my.workfront.com/attask/api/v21.0/parameter/search?name=${paramName}&fields=label`,
+        `https://${workfront_host}/attask/api/v21.0/parameter/search?name=${paramName}&fields=label`,
         { headers: { 'Authorization': `Bearer ${token}` } }
     )
     const data = await res.json()

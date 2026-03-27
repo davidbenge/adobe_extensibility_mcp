@@ -84,7 +84,7 @@ Same pattern works for `/task/{id}` and `/issue/{id}`.
 
 ```http
 # List approval processes for tasks
-GET /attask/api/v21.0/approval/search?objCode=TASK&fields=name,description&$$ORDERBY=name
+GET /attask/api/v21.0/approval/search?objCode=TASK&fields=name,description
 
 # Get approver statuses for a project
 GET /attask/api/v21.0/approverstatus/search?projectID={id}&fields=approverID,status,approver:name

@@ -1,25 +1,25 @@
-# Workfront Issues API — Custom Forms on Issues
+# Workfront Projects API — Custom Forms on Projects
 
 > For full Custom Form definitions (Category/Parameter objects, form structure, parameter types),
-> load the **workfront-forms-api** skill. This file covers reading/writing custom form data on issue objects only.
+> load the **workfront-forms-api** skill. This file covers reading/writing custom form data on project objects only.
 
 ## Reading Custom Form Data
 
-Custom form values are in `parameterValues` on the issue:
+Custom form values are in `parameterValues` on the project:
 
 ```http
-GET /attask/api/v21.0/issue/{id}?fields=parameterValues
+GET /attask/api/v21.0/proj/{id}?fields=parameterValues
 ```
 
 Response:
 ```json
 {
     "data": {
-        "ID": "issue-id",
+        "ID": "project-id",
         "parameterValues": {
-            "DE:Root Cause": "Configuration",
-            "DE:Customer Impacted": "true",
-            "DE:Resolution Notes": "Updated firewall rule"
+            "DE:Risk Level": "High",
+            "DE:Sprint": "Sprint 23",
+            "DE:Story Points": "5"
         }
     }
 }
@@ -32,23 +32,23 @@ Custom form fields use the `DE:` prefix followed by the field label.
 Custom field values can be set two equivalent ways — directly as top-level fields or nested in `parameterValues`:
 
 ```http
-PUT /attask/api/v21.0/issue/{id}
+PUT /attask/api/v21.0/proj/{id}
 Content-Type: application/json
 
 {
-    "DE:Root Cause": "User Error",
-    "DE:Customer Impacted": "false"
+    "DE:Risk Level": "Medium",
+    "DE:Story Points": "8"
 }
 ```
 
 ```http
-PUT /attask/api/v21.0/issue/{id}
+PUT /attask/api/v21.0/proj/{id}
 Content-Type: application/json
 
 {
     "parameterValues": {
-        "DE:Root Cause": "User Error",
-        "DE:Customer Impacted": "false"
+        "DE:Risk Level": "Medium",
+        "DE:Story Points": "8"
     }
 }
 ```
@@ -56,19 +56,19 @@ Content-Type: application/json
 A `categoryID` must be provided when writing custom field values. Use a single value or an array of category objects:
 
 ```http
-PUT /attask/api/v21.0/issue/{id}
+PUT /attask/api/v21.0/proj/{id}
 Content-Type: application/json
 
 {
     "categoryID": "5e7bb46701272381d25674d88f958e89",
-    "DE:Root Cause": "User Error"
+    "DE:Risk Level": "Medium"
 }
 ```
 
 To attach multiple forms at once, use `objectCategories`:
 
 ```http
-PUT /attask/api/v21.0/issue/{id}
+PUT /attask/api/v21.0/proj/{id}
 Content-Type: application/json
 
 {
@@ -76,15 +76,15 @@ Content-Type: application/json
         { "categoryID": "5e7bb46701272381d25674d88f958e89", "categoryOrder": 0, "objCode": "CTGY" },
         { "categoryID": "5755c21100548959f37973f394e99c2f", "categoryOrder": 1, "objCode": "CTGY" }
     ],
-    "DE:Root Cause": "User Error",
-    "DE:Customer Impacted": "false"
+    "DE:Risk Level": "Medium",
+    "DE:Story Points": "8"
 }
 ```
 
 ## Which Forms are Attached?
 
 ```http
-GET /attask/api/v21.0/issue/{id}?fields=objectCategories
+GET /attask/api/v21.0/proj/{id}?fields=objectCategories
 ```
 
 Response includes `objectCategories` with category IDs — look up category details for field definitions.
@@ -92,7 +92,7 @@ Response includes `objectCategories` with category IDs — look up category deta
 ## Searching by Custom Field Value
 
 ```http
-GET /attask/api/v21.0/issue/search?DE:Customer%20Impacted=true&fields=name,status
+GET /attask/api/v21.0/proj/search?DE:Risk%20Level=High&fields=name,status
 ```
 
 URL-encode field names with special characters.

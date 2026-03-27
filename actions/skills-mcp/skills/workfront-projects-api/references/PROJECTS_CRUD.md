@@ -35,7 +35,7 @@ Content-Type: application/json
 
 List available templates:
 ```http
-GET /attask/api/v21.0/tmpl/search?fields=name,description&$$ORDERBY=name
+GET /attask/api/v21.0/tmpl/search?fields=name,description
 ```
 
 ## Update Project Fields
@@ -60,7 +60,7 @@ Note: Setting `condition` requires `conditionType` to be `manual`. To switch to 
 ## Full Node.js CRUD Example
 
 ```javascript
-const BASE = (domain) => `https://${domain}.my.workfront.com/attask/api/v21.0`
+const BASE = `https://${workfront_host}/attask/api/v21.0`
 
 async function createProject(fields, token, domain) {
     const res = await fetch(`${BASE(domain)}/proj`, {

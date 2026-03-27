@@ -10,7 +10,7 @@ Same 2-step pattern as initial upload, but POST to `/docv` in step 2:
 
 ```javascript
 async function uploadNewVersion({ documentId, filePath, fileName }, token, domain) {
-    const base = `https://${domain}.my.workfront.com/attask/api/v21.0`
+    const base = `https://${workfront_host}/attask/api/v21.0`
 
     // Step 1: Upload file to get handle
     const form = new FormData()
@@ -38,7 +38,7 @@ async function uploadNewVersion({ documentId, filePath, fileName }, token, domai
 ## Get All Versions for a Document
 
 ```http
-GET /attask/api/v21.0/document/{id}?fields=*,versions[*]
+GET /attask/api/v21.0/document/{id}?fields=*,versions:*
 ```
 
 Response includes `versions` array and `currentVersionID`.
@@ -46,7 +46,7 @@ Response includes `versions` array and `currentVersionID`.
 ## List Versions via Search
 
 ```http
-GET /attask/api/v21.0/docv/search?documentID={docId}&fields=ID,versionNum,fileName,fileSize,enteredByID,entryDate&$$ORDERBY=versionNum&$$ORDERDIR=DESC
+GET /attask/api/v21.0/docv/search?documentID={docId}&fields=ID,version,fileName,docSize,enteredByID,entryDate
 ```
 
 ## DOCV Fields
@@ -57,11 +57,10 @@ GET /attask/api/v21.0/docv/search?documentID={docId}&fields=ID,versionNum,fileNa
 | `documentID` | string | Parent document ID |
 | `versionNum` | number | Version number (sequential) |
 | `fileName` | string | File name for this version |
-| `fileSize` | number | File size in bytes |
-| `fileExtension` | string | File extension |
+| `docSize` | number | File size in bytes |
+| `ext` | string | File extension |
 | `enteredByID` | string | User who uploaded this version |
 | `entryDate` | datetime | When this version was uploaded |
-| `downloadURL` | string | URL to download this version |
 
 ## Get Current Version Details
 

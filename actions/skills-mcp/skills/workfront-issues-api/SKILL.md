@@ -48,22 +48,12 @@ API specialist for Workfront Issue/Request (OPTASK) objects. Knows field names, 
 
 ## Core Concepts
 
-- **Base URL:** `https://<instance>.my.workfront.com/attask/api/v21.0/`
+- **Base URL:** `https://<workfront_host>/attask/api/v21.0/`
 - **Auth:** `Authorization: Bearer <token>` (OAuth2 recommended)
 - **Version:** Always specify `v21.0` explicitly in production
 - **CRITICAL — objCode:** `OPTASK` (NOT "ISSUE"). Endpoint is `/issue` but objCode used in forms, subscriptions, and searches is always `OPTASK`
-- **Write ops:** Include `sessionID` header for CSRF, or use OAuth2 Bearer token (covers CSRF)
 - **Field selection:** `fields=*` or `fields=ID,name,status` to control response size
 - **Pagination:** `$$FIRST=0&$$LIMIT=100` (max 2000 per request)
 - **Filter modifiers:** append `_Mod=eq|ne|gt|gte|lt|lte|contains|in|cicontains` to field param
 - **Request queues:** `isHelpDesk=true` to distinguish queue items from project issues
 
-## Quick Reference
-
-| Task | Reference |
-|------|-----------|
-| Know issue/request field names | ISSUE_FIELDS.md |
-| Assign issues to users/teams | ASSIGNMENTS.md |
-| Handle issue status changes | STATUS_TRANSITIONS.md |
-| Build issue queue queries | QUERY_PATTERNS.md |
-| Read/write custom form data on issues | CUSTOM_FORMS.md |
