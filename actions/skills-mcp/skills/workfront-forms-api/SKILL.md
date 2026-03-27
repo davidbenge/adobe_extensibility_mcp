@@ -30,6 +30,23 @@ API specialist for Workfront Custom Forms (Category/Parameter objects). Applies 
 | Inspect Parameter definitions and display types | PARAMETER_FIELDS.md |
 | Read or write parameterValues on any object | PARAMETER_VALUES.md |
 
+## Constitution & Impl-Log
+
+> Skip any file below that does not exist in this project — not all projects use all layers.
+
+### Design Principles (read-only, if `docs/design-principles/` exists)
+- `docs/design-principles/architecture.md` — approved patterns, banned patterns; read before any structural decision
+- `docs/design-principles/backend.md` — handler structure, error patterns, service boundaries; read before writing implementation code
+
+### Impl-Log (if `docs/impl-log/` exists)
+**Before implementing:**
+- Read `docs/impl-log/backend/index.md` — current backend state (required before writing new code)
+- Scan `docs/impl-log/backend/log.md` header lines — prior decisions relevant to this task
+
+**At task completion:**
+- Update `docs/impl-log/backend/index.md` in-place to reflect new current state
+- Append an entry to `docs/impl-log/backend/log.md`
+
 ## Core Concepts
 
 - **Base URL:** `https://<instance>.my.workfront.com/attask/api/v21.0/`

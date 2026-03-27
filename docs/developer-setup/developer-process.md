@@ -1,6 +1,29 @@
-# Developer Process — adobe-extensibility-mcp
+---
 
-**Cursor Multi-Persona AI Development Workflow** — Skills · Commands · Rules · Agents · Personas
+# Developer Setup
+
+## Quick Start
+
+1. Clone this repo (or copy the contents) into your Cursor project root.
+2. Start Cursor — the personas, commands, and rules are active immediately.
+3. (Optional) Configure MCP servers with credentials in `.cursor/mcp.json`.
+
+No `npm install` or build step required. The framework is pure configuration and markdown.
+
+## MCP Servers
+
+Config: `.cursor/mcp.json`. MCP servers extend agent capabilities with live data and domain knowledge. Add tokens for any server that requires authentication:
+
+1. Set the required env var (e.g. `GITHUB_TOKEN`) in your shell.
+2. Start Cursor from that same shell so the env var is available.
+3. The server will connect automatically on first use.
+
+## Further Reading
+
+- [Developer Process](developer-process.md) — Full developer workflow: setup, multi-persona roles, commands, constitution, impl-log.
+- [Persona and Command Reference](persona-and-command-reference.md) — Where personas/commands live, when to use which, leverage patterns.
+- [Persona Skill Authoring](persona-skill-authoring.md) — How to create or update persona SKILL.md files and commands.
+- [Context and Memory Architecture](#context-and-memory-architecture) — How the system tracks and manages context across personas, skills, and sessions (below).
 
 ---
 
@@ -10,450 +33,310 @@
 
 - This repo: [adobe-extensibility-mcp](https://github.com/dbenge/adobe_extensibility_mcp)
 
----
 
-## Table of Contents
+## Context and Memory Architecture
 
-1. [Philosophy & Guiding Principles](#1-philosophy--guiding-principles)
-2. [The Constitution — Design Principles](#2-the-constitution--design-principles)
-3. [Persona Roster & Skill Definitions](#3-persona-roster--skill-definitions)
-4. [File System Architecture](#4-file-system-architecture)
-5. [Rules — The Non-Negotiables](#5-rules--the-non-negotiables)
-6. [Commands — Process Orchestration](#6-commands--process-orchestration)
-7. [End-to-End Workflow](#7-end-to-end-workflow)
-8. [Human Touch Points Reference](#8-human-touch-points-reference)
-9. [Quick Reference](#9-quick-reference)
+### The Core Premise
+
+The entire architecture is built on a single constraint, stated explicitly in `docs/design-principles/vision.md`:
+
+> **Context loading competes with reasoning. Every token loaded is a token not available for reasoning. Personas load only what their role requires.**
+
+This one principle explains every structural decision: why there are separate index files and log files, why stories are ephemeral, why each persona has a scoped skill file, why the constitution lives in its own isolated directory. The system is not organized for developer convenience — it is organized to give each AI persona the minimum viable context it needs to reason at maximum quality.
 
 ---
 
-## 1. Philosophy & Guiding Principles
+### The Two Permanent Memory Layers
 
-This system treats Cursor as a multi-agent development team, not a code autocomplete tool. Each AI persona is a scoped specialist with defined expertise, bounded context, and a clear role in the workflow. The **human controls the gates**. The **AI does the cognitive and process work** within those gates. This separation is the entire foundation.
+The framework has exactly two categories of permanent storage: the **constitution** and the **impl-log**. Everything else is temporary.
 
-### 1.1 Core Tenets
+#### Layer 1: The Constitution (`docs/design-principles/`)
 
-- **Focused context produces better work.** An agent that knows everything about the system reasons poorly about any specific part of it. Each persona loads only what their role requires; deep knowledge in a narrow lane outperforms shallow knowledge across everything.
-- **Personas are specialists, not generalists.** An MCP developer does not opine on architecture. A PM does not write action code.
-- **The human controls transitions.** Automation runs within phases. Humans approve movement between phases.
-- **The filesystem is ephemeral for stories.** Working files under `docs/stories/` are temporary. Only the impl-log and design principles are permanent.
-- **The constitution is law.** `docs/design-principles/` files are non-negotiable. No debate resolution, task-plan, or implementation may contradict them.
-- **Risk is explicit.** Accepted risks are named, reasoned, and tracked. Silent omission is not acceptance.
-- **Memory is indexed.** Specialists understand the system through maintained index files in `docs/impl-log/`, not by searching history.
-
-### 1.2 The Four Primitives
-
-| Primitive | Role |
-|-----------|------|
-| **Rules** | Unconditional invariants. Always on, always applied. Guardrails only. No process logic. Stored in `.cursor/rules/multi-persona-workflow.mdc`. |
-| **Skills** | Persona expertise. One `SKILL.md` per persona in `.cursor/skills/[persona]/`. The agent routes to skills based on description metadata. Skills load only when relevant to the current task, never ambient. |
-| **Commands** | Process orchestration. Sequence, handoffs, file lifecycle, debate rounds, completion gates. If the workflow changes, edit a command. If a persona's expertise changes, edit a skill. |
-| **Agents** | Isolated execution environments. Separate Composer sessions with different system prompts, tool access, and optionally different models. Used for true role isolation when skills alone are insufficient. |
-
-**Note:** Skills change what the agent *knows*. Agents change *who* is doing the work. Use skills first. Escalate to separate agents only when you need true isolation or a different model configuration.
-
-### 1.3 Human vs. AI Responsibility
-
-**The User (human)** is responsible for:
-
-- Providing the creative seed and business context
-- Engaging authentically in the PM discovery interview
-- Reading and evaluating persona outputs at each phase gate
-- Making risk disposition decisions on Tier 2 security findings
-- Resolving deadlocked debates between personas
-- Approving impl plans and task plans before execution
-- Deliberate sign-off on task and story completion
-
-**The AI personas** are responsible for:
-
-- Researching, analyzing, and drafting within their domain
-- Loading and honoring the design principles
-- Surfacing conflicts, risks, and concerns
-- Maintaining the impl-log and index files
-- Chaining automatically between phases when no human decision is needed
-
-### 1.4 What This Looks Like Day to Day
-
-**The Story Planner**
-
-Run `/plan-new-backlog-story "your idea or feature brief"`. The PM skill runs a discovery interview. After the interview, story-plan writing and reviews run automatically. You get a notification when the Architect, Dev Lead, and Security Expert have all weighed in. When everything looks right, run `/plan-story-complete [id]`.
-
-**The Developer**
-
-Run `/dev-start-implementation-plan [story-id]`. That command creates `docs/stories/[id]/impl/plan.md` and, for each task, a `task-plan.md`. When all task-plans are written and security-reviewed, the workflow **pauses for you**.
-
-Review the plan, then run `/dev-start-implementation [story-id]`. That command acts as a **planner**: it reads the impl plan and task dependency order, hands out tasks to new context windows so that independent tasks run in parallel and dependent tasks run when their dependencies are complete. When all tasks are done, the planner informs you that implementation is **done for review**. Run `/dev-completed-implementation [story-id]` to review and finalize.
-
----
-
-## 2. The Constitution — Design Principles
-
-The design principles directory is the north star of the entire system. Every specialist skill loads its relevant principle file before doing anything else.
-
-**Rule:** No task-plan, debate resolution, command output, or implementation may contradict `docs/design-principles/`. Conflicts escalate to the Architect persona.
-
-### 2.1 File Structure
+The constitution is written once, before any story is planned or any code is written. It contains the invariants that no persona may ever contradict:
 
 ```
 docs/design-principles/
-  vision.md          ← project north star, problem being solved, success metrics
-  architecture.md    ← system mandates, patterns, boundaries, ADR conventions
-  backend.md         ← MCP server philosophy, action structure, error handling
-  skills-content.md  ← skill authoring conventions, SKILL.md structure, routing descriptions
-  testing.md         ← quality philosophy, coverage expectations, testing pyramid
-  security.md        ← non-negotiables, risk tier definitions
+  vision.md        ← project north star, success metrics, non-goals, target users
+  architecture.md  ← approved patterns, banned patterns, ADR conventions, branching rules
+  backend.md       ← handler structure, timeout tiers, error patterns, service boundaries
+  frontend.md      ← UI framework, component rules, state management, accessibility
+  db.md            ← schema conventions, migration policy, connection handling, query rules
+  testing.md       ← test pyramid philosophy, coverage expectations, release gate criteria
+  security.md      ← risk tier definitions (canonical), non-negotiables, auth model
 ```
 
-### 2.2 Risk Tier Definitions (from security.md)
+Each file is authored as a set of commands, not suggestions. The terse, directive tone is intentional: every token saved in the constitution is a token available for reasoning when a persona loads it.
 
-- **Tier 1 — Must Fix:** Blocks all workflow progression. Cannot be ratified or executed until resolved.
-- **Tier 2 — Should Address:** Must appear in the impl plan with either a mitigation approach or a formal risk acceptance. Human must explicitly decide.
-- **Tier 3 — Noted:** Logged to the security impl-log for posture tracking. No immediate action required.
+**Who reads which constitution file and why:**
+
+| Persona | Reads | Reason |
+|---|---|---|
+| Product Manager | `vision.md` | Grounds discovery interviews in project north star; prevents out-of-scope stories |
+| Architect | `vision.md`, `architecture.md`, all domain files | Reviews all design decisions for principle alignment; cannot approve patterns without knowing what is banned |
+| Dev Lead | `architecture.md`, `backend.md` | Assesses feasibility and effort signals against known constraints; needs banned patterns to flag risks |
+| Backend Specialist | `backend.md` | Owns API and service implementation; these are the direct coding standards it must follow |
+| Frontend Specialist | `frontend.md` | Implementation must match declared component philosophy and state management rules |
+| DB Specialist | `db.md` | Schema, migration, connection — every decision needs the canonical data philosophy |
+| Test Engineer | `testing.md` | Coverage plan must meet release gate criteria; cannot define tests without knowing the test pyramid |
+| Security Expert | `security.md` | Risk tier definitions are canonical and live here; all findings are assigned against these tiers |
+
+No persona loads the entire constitution. Each loads only its relevant file(s). The Architect is the only persona that reads across multiple design-principle files, because architectural review spans all domain boundaries.
+
+#### Layer 2: The Impl-Log (`docs/impl-log/`)
+
+The impl-log is the system's living memory. It grows throughout the life of the project and persists across every story, every sprint, and every developer session. It is structured per domain:
+
+```
+docs/impl-log/
+  architecture/
+    index.md         ← current state of architecture decisions (maintained in-place)
+    log.md           ← append-only history of architecture changes
+  backend/
+    index.md         ← current state of backend structure, endpoints, service map
+    log.md           ← history of backend changes
+  db/
+    index.md         ← current schema, migration state, connection patterns in use
+    log.md           ← history of schema changes
+  frontend/
+    index.md         ← current component inventory, routes, state patterns in use
+    log.md           ← history of frontend changes
+  test/
+    index.md         ← current test coverage state, what is and isn't covered
+    log.md           ← history of test changes
+  security/
+    index.md         ← current security posture, open risks
+    log.md           ← history of security reviews
+    risk-register.md ← all open Tier 1 and Tier 2 findings with disposition status
+```
+
+##### The Critical Distinction: `index.md` vs `log.md`
+
+This is the most important structural decision in the entire memory system, and it is governed by an inviolable rule:
+
+> **Index files are updated in-place and represent only current state. Log files are append-only and represent history.**
+
+A persona reading `backend/index.md` learns exactly what the backend looks like today — what endpoints exist, what service patterns are in use, what has been deprecated. It does not have to read through months of change history to reconstruct present state. The index is a snapshot. The log is an audit trail.
+
+**Why this matters for context management:** If a persona had to read the full `log.md` to understand current system state, the context cost would grow linearly with project age. By maintaining a current-state index, a persona can load a ~100-line index and have complete situational awareness about its domain, then optionally scan `log.md` header lines for related prior work. The log is consulted selectively, never fully.
+
+**Who reads which impl-log file:**
+
+| Persona | Reads | When |
+|---|---|---|
+| Product Manager | `architecture/index.md` | During `/plan-1` — scans for Jira issue overlap; checks if a similar story was already shipped |
+| Architect | All `*/index.md` files | During story review and impl planning — needs cross-domain current state to assess integration impact |
+| Architect | `architecture/log.md` header lines | Scans for related prior architecture decisions before writing a new one |
+| Dev Lead | `architecture/index.md`, `architecture/log.md` | Assesses effort and identifies known patterns before estimating |
+| Backend Specialist | `backend/index.md` | Current endpoint map, service patterns, before writing any new backend code |
+| Backend Specialist | `backend/log.md` header lines | Scans for prior decisions that might inform current task |
+| DB Specialist | `db/index.md` | Current schema state before writing migrations or queries |
+| Frontend Specialist | `frontend/index.md` | Component inventory; checks if a needed component already exists |
+| Test Engineer | `test/index.md` | Current coverage map; determines what is already tested before defining new test strategy |
+| Security Expert | `security/index.md`, `risk-register.md` | Open risk posture before reviewing new work; assigns risk IDs sequentially |
+| Orchestrator | All `*/index.md` files | When a workflow is stuck; needs full system state to diagnose deadlock and recommend recovery |
+
+**Who writes to impl-log and when:**
+
+Writing to impl-log happens at task and story completion, not during planning. The separation is deliberate: planning uses existing knowledge; completion updates that knowledge for the next cycle.
+
+- Each domain specialist writes to `impl-log/[domain]/log.md` when their implementation task is marked complete (via `/dev-3`).
+- Each domain specialist updates `impl-log/[domain]/index.md` in-place to reflect the new current state.
+- The Architect updates `impl-log/architecture/index.md` when a new pattern is established or a decision is reversed.
+- The Security Expert appends to `impl-log/security/risk-register.md` whenever a new Tier 1 or Tier 2 finding is raised, and updates disposition status when a human resolves it.
 
 ---
 
-## 3. Persona Roster & Skill Definitions
+### The Ephemeral Artifact Layer: Stories, Epics, Tasks
 
-Each persona lives in `.cursor/skills/[persona]/SKILL.md`. The description field in the SKILL.md frontmatter is written for agent routing: tight, keyword-dense, specific about when this skill should be loaded.
+Everything between "idea" and "completed impl-log update" lives in ephemeral working directories that are **never committed to version control**.
 
-### 3.1 Active Personas
+```
+docs/stories/[story-id]/
+  story-plan.md          ← master story artifact; all persona reviews appended here
+  impl/
+    plan.md              ← task list and dependency ordering
+    [task-id]/
+      task-plan.md       ← per-task specialist breakdown
 
-**App Builder MCP Developer** (PRIMARY for this project)
+docs/epics/[epic-id]/
+  epic-plan.md           ← cross-story coordination artifact
+```
 
-- **Skill file:** `.cursor/skills/app-builder-mcp-developer/SKILL.md`
-- **Principles loaded:** `docs/design-principles/backend.md`, `docs/design-principles/architecture.md`
-- **Impl-log loaded:** `docs/impl-log/backend/index.md`, `docs/impl-log/backend/log.md`
+#### `story-plan.md` — The Central Story Artifact
 
-**Role:** PRIMARY developer persona. Designs, implements, and maintains the skills MCP server on Adobe I/O Runtime. All MCP tool work, skill registry build pipeline, skill content authoring, deployment.
+This file is the single source of truth for a story in flight. It accumulates persona reviews in a defined sequence — PM discovery → Architect Review → Dev Lead Review → Security Expert Review — with each persona appending only its own section. No persona modifies another persona's section. The rule is absolute: disagreements go to a Debate Log section, not into overwriting someone else's content.
 
-**Product Manager**
+The file's structure naturally encodes the review sequence:
 
-- **Skill file:** `.cursor/skills/product-manager/SKILL.md`
-- **Principles loaded:** `vision.md`
+1. **Discovery Summary** — what the PM learned from the stakeholder interview
+2. **User Story + Acceptance Criteria** — PM output
+3. **Priority Score + Product Risks** — PM output
+4. **Backlog Conflict Assessment** — PM output (informed by impl-log architecture index)
+5. **Architect Review** — technical validation, integration concerns, pattern alignment, sequence diagram
+6. **Dev Lead Review** — effort signals, feasibility, dependency risks
+7. **Security Expert Review** — risk tier table, Tier 1/2/3 findings
+8. **Human Dispositions** — explicit named decisions for Tier 2 findings (human-filled)
+9. **Status** — Ready / Blocked / Approved
 
-**Architect**
+When the story is complete and archived, this file moves to `docs/impl-log/stories/[id]/` and the working directory is deleted.
 
-- **Skill file:** `.cursor/skills/architect/SKILL.md`
-- **Principles loaded:** `architecture.md`, `vision.md`
+#### `impl/plan.md` — The Task List
 
-**Dev Lead**
+Created during `/dev-1`, this file is the Architect and Dev Lead's output: an ordered list of implementation tasks with their dependencies, interface contracts, and specialist assignments. It is what the developer reviews before approving execution. It answers: "What will be built, in what order, and who owns what?"
 
-- **Skill file:** `.cursor/skills/dev-lead/SKILL.md`
-- **Principles loaded:** `architecture.md`, `backend.md`
+Example structure:
 
-**App Builder Actions Developer**
+```
+Task T1: Schema migration — DB Specialist
+Task T2: API handler — Backend Specialist (depends on T1)
+Task T3: Frontend integration — Frontend Specialist (depends on T2)
+Task T4: Test coverage — Test Engineer (depends on T3)
+Security review checkpoint — Security Expert (after T4)
+```
 
-- **Skill file:** `.cursor/skills/app-builder-actions-developer/SKILL.md`
-- **Use when:** General App Builder action structure or error handling patterns (not MCP-specific).
+The task list is not a backlog and not a Jira board. It is a sequencing contract for a single story's implementation, scoped to one conversation lifetime.
 
-**Test Engineer**
+#### `impl/[task-id]/task-plan.md` — The Per-Task Specialist Contract
 
-- **Skill file:** `.cursor/skills/test-engineer/SKILL.md`
-- **Principles loaded:** `testing.md`
-- **Impl-log loaded:** `test/index.md`
+Each task gets its own `task-plan.md`, written by the assigned specialists in sequence. This is where implementation specifics live — not at the story level, but at the task level. A task-plan for a backend task contains:
 
-**Security Expert**
+- **Architect section**: interface requirements, pattern constraints, links to relevant architecture decisions
+- **Backend Specialist section**: handler structure, endpoint signature, error cases, service call sequence
+- **Test Engineer section**: unit test cases, integration test setup, Given/When/Then acceptance verification
+- **Security Expert section**: per-task risk review with tier assignments
 
-- **Skill file:** `.cursor/skills/security-expert/SKILL.md`
-- **Principles loaded:** `security.md`
-- **Impl-log loaded:** `security/index.md`, `security/risk-register.md`
-
-**Orchestrator**
-
-- **Skill file:** `.cursor/skills/orchestrator/SKILL.md`
-- **Role:** Loaded when the workflow is stuck or a deadlock has occurred. Reads full current artifact, assesses state, recommends next command.
-
-### 3.2 Archived Personas (not applicable to this project)
-
-- `graph-db-specialist` — ARCHIVED (no Neo4j / no database)
-- `ims-login` — ARCHIVED (no IMS auth; `skills-mcp` action is public)
-- `app-builder-frontend-developer` — ARCHIVED (no frontend)
+The rule about large artifacts (>50 lines) being extracted and linked from the task-plan keeps the task-plan itself scannable. A persona reading the task-plan to begin implementation does not want to wade through 200 lines of scaffolding code — it wants the contract, with details linked.
 
 ---
 
-## 4. File System Architecture
+### The Story Lifecycle and Who Reads What, When
 
-### 4.1 Complete Structure
+#### Phase 1: `/plan-1` — Story Inception
 
-```
-actions/
-  skills-mcp/
-    index.js            ← MCP server entry point
-    registry.js         ← catalog loader
-    registry.json       ← GENERATED (do not edit)
-    skills/             ← skill content (SKILL.md + references/)
+**PM skill activates.** Reads `vision.md` and `impl-log/architecture/index.md`. Runs a 4–8 exchange discovery interview with the human. Produces `story-plan.md` PM sections. Auto-chains to Architect.
 
-scripts/
-  generate-registry.js  ← build script
+**Architect skill activates.** Reads `architecture.md`, `vision.md`, all domain design-principle files, all `impl-log/*/index.md`, scans `architecture/log.md` headers. Appends Architect Review. Auto-chains to Dev Lead.
 
-docs/
-  design-principles/    ← PERMANENT. The constitution.
-    vision.md
-    architecture.md
-    backend.md
-    skills-content.md
-    testing.md
-    security.md
+**Dev Lead skill activates.** Reads `architecture.md`, `backend.md`, `impl-log/architecture/index.md` and `log.md`, and the Architect Review already in `story-plan.md`. Appends Dev Lead Review. Auto-chains to Security Expert.
 
-  stories/              ← EPHEMERAL. Deleted on completion.
-    [story-id]/
-      story-plan.md
-      impl/
-        plan.md
-        [task-id]/
-          task-plan.md
+**Security Expert skill activates.** Reads `security.md`, `impl-log/security/index.md`, `risk-register.md`, and the full `story-plan.md` including all prior reviews. Appends Security Expert Review with risk tier table. **Pauses for human** if any Tier 1 or Tier 2 finding exists.
 
-  impl-log/             ← PERMANENT. System memory.
-    architecture/
-      log.md
-      index.md          ← system brain / topology map
-    backend/
-      log.md
-      index.md          ← current service/API surface map
-    test/
-      log.md
-      index.md
-    security/
-      log.md
-      index.md          ← current threat surface map
-      risk-register.md
-    stories/            ← Archived story artifacts
+**Human gate:** Reviews story-plan. Fills Tier 2 Disposition fields. Approves or sends back.
 
-  developer-setup/
-    developer-process.md
-    persona-and-command-reference.md
-    persona-skill-authoring.md
-    cicd-setup.md
-    app-builder-application-points.md
-    app-builder-frontend-unified-shell.md
+#### Phase 2: `/dev-1` — Implementation Planning
 
-.cursor/
-  skills/
-    product-manager/SKILL.md
-    architect/SKILL.md
-    dev-lead/SKILL.md
-    app-builder-mcp-developer/SKILL.md     ← PRIMARY
-    app-builder-actions-developer/SKILL.md
-    test-engineer/SKILL.md
-    security-expert/SKILL.md
-    orchestrator/SKILL.md
-    graph-db-specialist/SKILL.md           ← ARCHIVED
-    ims-login/SKILL.md                     ← ARCHIVED
-    app-builder-frontend-developer/SKILL.md ← ARCHIVED
-  commands/
-    (16 command files — see .cursor/commands/)
-  rules/
-    multi-persona-workflow.mdc
-    scripts-conventions.mdc
-  AGENTS.md             ← Lightweight context map
-```
+**Architect + Dev Lead activate in sequence.** Read the approved `story-plan.md` and all `impl-log/*/index.md`. Produce `impl/plan.md` (task list) and stub `task-plan.md` files.
 
-### 4.2 The Ephemeral vs. Permanent Split
+**Domain specialists activate in dependency order** (DB → Backend → Frontend → Test → Security). Each reads its own design-principle file, its own `impl-log/[domain]/index.md`, the `task-plan.md` stubs, and previously completed specialist sections. (The Test Engineer, for example, reads all specialist sections before writing — it cannot define test coverage without knowing what was implemented.)
 
-Everything in `docs/stories/` is explicitly temporary. When a story completes, the story-plan and task-plans are **archived** to `docs/impl-log/stories/$STORY_ID/`, then the working folder is removed.
+Each specialist appends its section to the relevant `task-plan.md`.
 
-The impl-log is permanent and treated like production code. Index files are updated in-place, not appended.
+**Human gate:** Reviews `impl/plan.md` and all `task-plan.md` files. Approves plan or requests debate.
 
-### 4.3 Story-Plan File Structure
+#### Phase 3: `/dev-2` — Implementation Execution
 
-```markdown
-# Story: [Story Title]
+**Domain specialists implement against their `task-plan.md` as the contract.** The task-plan is the only context loaded for execution — the specialist does not re-read the full story-plan or all design principles. It reads its task-plan (which already contains the distilled constraints from prior phases) and implements.
 
-## Discovery Summary
-## User Story
-## Acceptance Criteria
-## Backlog Conflict Assessment
-## Architect Review
-## Dev Lead Review
-## Security Expert Review
-### Threat Assessment
-| Risk ID | Description | Tier | Recommendation | Disposition |
-## Debate Log
-## Status
-```
+This is the most important isolation point: **the task-plan is a pre-digested context capsule.** All relevant principles, interface contracts, and constraints were extracted and placed into the task-plan during planning. The implementing specialist does not need to re-derive anything from first principles.
 
-### 4.4 Task-Plan File Structure
+**Human gate per task** (if running one at a time): Reviews implementation, runs `/dev-3 [id] [task]` to close the task.
 
-```markdown
-# Task: [Task Title] | Story: [Story ID]
+#### Phase 4: `/dev-3` — Task Completion and Memory Update
 
-## Task Overview
-## Persona(s) responsible
-## App Builder MCP Developer (PRIMARY)
-## App Builder Actions Developer (if applicable)
-## Test Engineer
-## Security Expert Review
-## Work items (todo list)
-## Sign-off
-## Status
-```
+**Domain specialist writes to impl-log.** Reads its `task-plan.md` (to know what was built) and its `impl-log/[domain]/index.md` (to update in-place). Appends to `impl-log/[domain]/log.md`. Updates the index to reflect new current state.
 
-### 4.5 Impl-Log Entry Format
-
-```markdown
-## [STORY-ID] | [Story Title] | [Date]
-**What**: 1-2 sentence summary of change
-**Why**: Problem or motivation
-**Key decisions**: Non-obvious choices, trade-offs, alternatives rejected
-**Contracts**: API shapes, data contracts, or interfaces other domains depend on
-**See**: [task details](../stories/$STORY_ID/$TASK_ID/task-plan.md)
-Story: [STORY-ID]
-```
+**Story completion:** Story-plan is archived to `impl-log/stories/[id]/`. The working `docs/stories/[id]/` directory is deleted. The impl-log indexes now carry all lasting knowledge; the ephemeral files are gone.
 
 ---
 
-## 5. Rules — The Non-Negotiables
+### Epics: Coordinating Across Stories
 
-**Location:** `.cursor/rules/` — workflow: `multi-persona-workflow.mdc`; scripts: `scripts-conventions.mdc`.
+The epic workflow (`/epic-1`, `/epic-2`, `/epic-3`) adds a coordination layer above stories. An epic is a collection of stories with shared dependencies and sequencing.
 
-1. Never modify another persona's section in a story-plan or task-plan. Personas append their own section only. Disagreements go in Debate Log.
-2. `docs/stories/` files are ephemeral. Never commit them to version control.
-3. impl-log index files are updated in-place. Never append new entries to index files. `index.md` = current state. `log.md` = history.
-4. `docs/design-principles/` is non-negotiable. No debate resolution, task-plan, or implementation may contradict it.
-5. A Tier 1 security finding blocks all progression commands until resolved.
-6. A Tier 2 security finding requires an explicit human Disposition entry before any progression command executes.
-7. Large artifacts (migration scripts, specs over 50 lines) are extracted to separate files and linked from the task-plan section.
+`docs/epics/[id]/epic-plan.md` contains:
 
----
+- The scope of the epic and which stories it encompasses
+- Cross-story dependency ordering
+- Shared architecture decisions that apply to all child stories
+- Branching strategy (epics get a single `epic/[id]` branch; no per-story sub-branches)
 
-## 6. Commands — Process Orchestration
+The Architect is the primary author of the epic-plan. It reads all relevant `impl-log/*/index.md` files, `architecture.md`, `vision.md`, and individual story-plans for all stories in the epic.
 
-Commands live in `.cursor/commands/` as `.md` files. Claude Code equivalents live in `.claude/commands/`. They encode workflow sequence, not domain expertise. Commands call skills. Skills provide the expertise.
-
-### 6.1 Command Index
-
-| Command | Invoked By | Chains To | Purpose |
-|---------|------------|-----------|---------|
-| `/plan-new-backlog-story "idea"` | User | `/plan-story-review-with-tech-team` (auto) | Kick off PM discovery and story writing |
-| `/plan-story-review-with-tech-team [id]` | Auto or User | Security review (auto) | Architect + Dev Lead + Security review story-plan |
-| `/plan-resolve-tech-team-story-debate [id]` | User if needed | Self (rounds) → pause | Threaded debate between personas |
-| `/plan-story-complete [id]` | User | Archive story artifacts | Ratify story, archive, clean up |
-| `/dev-start-implementation-plan [id]` | User | `/dev-start-implementation-task-plan` (auto) | Break story into impl tasks |
-| `/dev-review-implementation-plan [id]` | User if needed | Pause for human | Formal debate on impl plan |
-| `/dev-start-implementation-task-plan [id] [task]` | Auto or User | Pause for human approval | Specialists write task-plan sections |
-| `/dev-start-implementation [id]` | User | Hand out tasks (parallel when Agent tool available); inform for review when done | Planner: run whole story implementation |
-| `/dev-start-implementation-task [id] [task]` | User | Pause for human | Execute implementation for one task |
-| `/dev-implementation-plan-status [id]` | User | None | Roll-up status of impl plan |
-| `/dev-completed-implementation [id]` | User | Review tasks; optional dev-completed-implementation-task; finalize | Story-level implementation review and close-out |
-| `/dev-completed-implementation-task [id] [task]` | User | dev-write-impl-log-entry + dev-update-impl-log-index (auto) | Sign off one task, trigger memory update |
-| `/dev-write-impl-log-entry [domain] [id]` | Auto | dev-update-impl-log-index (auto) | Specialist writes impl-log entry |
-| `/dev-update-impl-log-index [domain]` | Auto | End | Update domain index.md in-place |
-| `/review-persona-skills [scope]` | User | None | Quality review of persona skills |
-
-### 6.2 Task list and orchestration (plan and task structure)
-
-**Plan level (impl/plan.md)**
-
-- **Tasks and Dependency Order** — Table of task, description, deps, owner.
-- **Dependency, parallelism, and work areas** — Deps, can-run-in-parallel-with, work areas (paths), collision risk.
-- **Sequencing summary** — Waves (e.g. Wave 1: T1, T2 in parallel; Wave 2: T3 after T1).
-
-**Task level (impl/Tn/task-plan.md)**
-
-- **Persona(s) responsible** — Primary persona (e.g. MCP Developer, Test, Security).
-- **Work items (todo list)** — A checklist of concrete steps. The persona works through the list and marks items complete (`[x]`).
-- **Sign-off** — A table: role/persona, sign-off checkbox, notes.
+The epic-plan exists to prevent individual stories from making locally rational decisions that collectively break the system. On epic completion, it is archived alongside its stories.
 
 ---
 
-## 7. End-to-End Workflow
+### Progressive Disclosure: How Context Is Rationed
 
-### 7.1 Story Planning Phase
+The system enforces three levels of progressive disclosure for each persona activation:
 
-> **USER ACTION:** Run `/plan-new-backlog-story "rough idea or feature brief"`.
+**Level 1 — Frontmatter metadata** (always available): The `description` field in each `SKILL.md` is what Cursor reads to route work to the right persona. It tells the system *when* to use this skill, not *what* the skill knows.
 
-> **AUTO:** PM skill enters discovery interview mode. No files loaded yet.
+**Level 2 — Skill file** (loaded on activation): When a persona is activated, its `SKILL.md` is loaded. This file contains role boundaries, instructions, output contract, and anti-patterns — the procedural knowledge. It does not contain domain facts (what endpoints exist, what schema looks like). It contains process knowledge (how to structure a handler, in what sequence to load context, what to output).
 
-> **USER ACTION:** Engage the PM interview authentically. Answer questions about the problem, users, success metrics.
+**Level 3 — Referenced documents** (loaded selectively per task): The `SKILL.md` instructs the persona to read specific files. It names exactly what to read: `backend.md` for principles, `impl-log/backend/index.md` for current state, scan `impl-log/backend/log.md` headers for history. Nothing else. The persona does not load the full codebase, all design-principle files, or the full story history.
 
-> **AUTO:** PM loads vision.md, checks backlog for overlap. Writes story-plan.md. Chains to `/plan-story-review-with-tech-team`.
-
-> **AUTO:** Architect, Dev Lead, Security Expert each write their review sections in sequence. Security evaluates for risk tiers.
-
-> **USER ACTION (if Tier 2 risks):** Fill Disposition fields for each Tier 2 risk.
-
-> **USER ACTION:** When everything looks right, run `/plan-story-complete [id]`.
-
-> **AUTO:** Verifies no open Tier 1 findings, no undisposed Tier 2 findings. Archives story-plan. Cleans up working folder.
-
-### 7.2 Implementation Planning Phase
-
-> **USER ACTION:** Run `/dev-start-implementation-plan [id]`.
-
-> **AUTO:** Architect and Dev Lead create `impl/plan.md`. All specialist skills write task-plan sections. Workflow pauses when all task-plans are complete.
-
-> **USER ACTION:** Review `impl/plan.md` and each `task-plan.md`. Fill in any Tier 2 risk dispositions. Approve or trigger debate if needed.
-
-### 7.3 Task Execution Phase
-
-> **USER ACTION:** Run `/dev-start-implementation [id]`.
-
-> **AUTO:** Planner reads the impl plan, hands out tasks (parallel for independent tasks, sequential for dependent tasks). When all tasks are done, informs user implementation is done for review.
-
-> **USER ACTION:** Monitor as needed. If a specialist hits something that contradicts the task-plan, decide: update the plan or course-correct the agent.
-
-### 7.4 Completion & Memory Phase
-
-> **USER ACTION:** Run `/dev-completed-implementation [id]` to review task status, complete any remaining tasks, review for principles/skill updates, and finalize.
-
-> **USER ACTION:** Run `/plan-story-complete` at impl level. Review architecture/log.md and architecture/index.md before confirming.
-
-> **AUTO:** impl/ folder archived. Filesystem is clean.
+This three-level structure means a persona begins with essentially zero context (just its procedural skill), then loads only what it needs for this specific task, in the order its skill file specifies.
 
 ---
 
-## 8. Human Touch Points Reference
+### Persona Isolation: How Specialization Prevents Hallucination
 
-| Stage | User Action | Why Human — Not Automation |
-|-------|-------------|----------------------------|
-| Story seed | Run `/plan-new-backlog-story "idea"` | Entry point. Creative and business judgment. |
-| PM interview | Engage exchanges | Input only the human has. |
-| Tier 2 disposition (story) | Fill Disposition fields | Decision; formal named risk acceptance. |
-| Debate trigger | Run `/plan-resolve-tech-team-story-debate [id]` | Judgment; surface and frame the conflict. |
-| Deadlock resolution | Read summary, make the call | Judgment; personas genuinely disagree. |
-| Story ratification | Run `/plan-story-complete [id]` | Accountability; formal gate before archiving. |
-| Impl kickoff | Run `/dev-start-implementation-plan [id]` | Timing — human controls when impl begins. |
-| Task-plan approval | Review + fill Tier 2 dispositions | Quality gate before execution begins. |
-| Execution monitoring | Monitor, catch deviations | Quality — no silent plan contradictions. |
-| Task sign-off | Run `/dev-completed-implementation-task [id] [task]` | Accountability — deliberate completion. |
-| Story impl review | Run `/dev-completed-implementation [id]` | Review all tasks, close out, principles review. |
-| Story close (impl) | Run `/plan-story-complete` at impl level | Accountability — sanity check system brain. |
+Hallucination in coding AI systems typically occurs in one of three ways:
+
+1. **The AI invents facts it should not know** — because it has no grounded reference
+2. **The AI confidently applies patterns from one domain to another** — because it has no role boundary
+3. **The AI produces inconsistent decisions across sessions** — because it has no persistent memory of prior decisions
+
+The framework addresses all three:
+
+**Problem 1 (invented facts)** is countered by the impl-log. Before a specialist can say anything about the current system state, it must read `impl-log/[domain]/index.md`. The index is the ground truth. The persona is not asked to remember what exists — it is required to read the authoritative current-state file before taking any action.
+
+**Problem 2 (domain bleed)** is countered by role boundaries. Every `SKILL.md` has an explicit "Does NOT" list. The backend specialist does not write schema migrations. The DB specialist does not opine on component design. The PM does not prescribe implementation. When a persona notices a problem outside its domain, the skill instructs it to surface the concern in the appropriate section and assign it to the correct specialist — not to fix it unilaterally. This keeps each persona's reasoning within a domain it has the context to reason about correctly.
+
+**Problem 3 (cross-session inconsistency)** is countered by the impl-log index. The index is updated in-place at task completion and is the source of truth for subsequent sessions. When a new story starts three sprints later, the backend specialist reads the same `backend/index.md`, which has been maintained throughout. It does not have to reconstruct system history from training data or from reading git history. The index tells it what is true now.
 
 ---
 
-## 9. Quick Reference
+### The MCP Domain Skills Layer
 
-### 9.1 Decision Framework — Where Does This Belong?
+For platform-specific domain knowledge (Adobe App Builder, Workfront APIs, I/O Runtime, etc.), the system adds a fourth context layer: **on-demand MCP skill loading**.
 
-| Question | Answer |
-|----------|--------|
-| Is it unconditional? Always applies regardless of context? | **Rule** (`.cursor/rules/`) |
-| Is it domain expertise for a specific role? | **Skill** (`.cursor/skills/[persona]/SKILL.md`) |
-| Is it workflow sequence or process logic? | **Command** (`.cursor/commands/`) |
-| Is it project context or guiding philosophy? | **design-principles/** |
-| Is it current system state for fast context loading? | **impl-log index file** |
-| Is it historical narrative for deep research? | **impl-log log file** |
+When a backend or frontend specialist needs Adobe platform knowledge, its `SKILL.md` instructs it to call `list_skills` on the `adobe-extensibility-mcp` server, then `load_skill` for the applicable domain. This surfaces deep platform API contracts, authentication patterns, and best practices on demand — without embedding that knowledge statically in the skill file or design principles.
 
-### 9.2 Context Loading by Persona
+This keeps `SKILL.md` files and `design-principles/` platform-agnostic and reusable across projects, while giving specialist personas access to the exact platform depth they need when they need it.
 
-| Persona | Principle Files | Index Files | Task Files |
-|---------|-----------------|-------------|------------|
-| Product Manager | `vision.md` | — | story-plan.md (writing) |
-| Architect | `architecture.md` + `vision.md` | All domain indexes | story-plan.md, impl/plan.md |
-| Dev Lead | `architecture.md` + `backend.md` | architecture/index.md | story-plan.md, impl/plan.md |
-| App Builder MCP Developer | `backend.md`, `architecture.md` | backend/index.md | task-plan.md (PRIMARY) |
-| App Builder Actions Developer | `backend.md` | backend/index.md | task-plan.md (if action structure involved) |
-| Test Engineer | `testing.md` | test/index.md | task-plan.md (reads all first) |
-| Security Expert | `security.md` | security/index.md + risk-register | story-plan + task-plan |
-| Orchestrator | — | All domain indexes | Full current artifact |
+---
 
-### 9.3 Key Commands Quick Reference
+### The Rules Layer: Enforcement Across All Personas
 
-```bash
-npm test                           # pretest generates registry, then runs jest
-npm run build                      # prebuild generates registry, then webpack
-npm run dev                        # aio app run (local dev server)
-npm run deploy                     # build + aio app deploy
-node scripts/generate-registry.js  # regenerate registry.json manually
-```
+The `multi-persona-workflow.mdc` Cursor rule file acts as the final enforcement layer. Unlike skills (loaded selectively) and commands (which encode process), rules are unconditional — they apply to every AI interaction regardless of which persona is active.
 
-See [CLAUDE.md](../../CLAUDE.md) at repo root for full command reference.
+The seven non-negotiable rules prevent the most dangerous failure modes:
+
+1. **No persona modifies another persona's section** — prevents one persona from rationalizing away another's concerns
+2. **`docs/stories/` files are never committed** — prevents ephemeral planning artifacts from polluting version control history
+3. **Index files updated in-place, never appended** — maintains the current-state guarantee that all index-reading depends on
+4. **Design principles are non-negotiable** — prevents any persona from arguing around the constitution
+5. **Tier 1 security blocks all progression** — makes the security gate hard, not advisory
+6. **Tier 2 requires named human disposition** — prevents silent risk acceptance
+7. **Large artifacts (>50 lines) extracted to linked files** — keeps task-plans scannable for implementation
+
+---
+
+### Why This Architecture Minimizes Hallucination
+
+The system's anti-hallucination properties emerge from its structure, not from prompting. Each property maps directly to an architectural decision:
+
+| Failure Mode | Architectural Counter |
+|---|---|
+| AI invents system state | Every persona reads the impl-log index before acting |
+| AI applies wrong domain patterns | Role boundaries + scoped design-principle files |
+| AI contradicts prior decisions | Constitution is law; no persona can override it |
+| AI "forgets" between sessions | Impl-log index is permanent and maintained in-place |
+| AI gold-plates or over-engineers | `vision.md` non-goals + "simplicity first" behavioral guideline |
+| AI silently accepts security risk | Tier 1/2 system with hard gates |
+| AI produces inconsistent cross-persona output | Append-only sections; no persona edits another's content |
+| Context window overflow | Ephemeral stories, scoped indexes, progressive disclosure |
+
+The most important property is that the system's benefits compound over time. As the impl-log grows, each domain index becomes a richer snapshot of system truth. New stories start with more grounded context than earlier ones. The AI personas become more accurate and more consistent as the project matures — not less, as is typical in ad-hoc AI-assisted development where context drift accumulates across sessions.

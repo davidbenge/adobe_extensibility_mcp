@@ -73,3 +73,28 @@ function App() {
 // Check if running inside the shell vs standalone
 const isInShell = window !== window.parent
 ```
+
+## Local Dev Testing (extensionOverride)
+
+To test a locally running extension in Workfront without deploying:
+
+1. Run `aio app run` — note the local URL (e.g. `https://localhost:9080`)
+2. Open Workfront in your browser and go to the page you want to test
+3. Open **DevTools → Application → Local Storage** (for `workfront.com` or `workfront.adobe.com`)
+4. Add a new entry:
+   - **Key**: `extensionOverride`
+   - **Value**: `https://localhost:9080` (your local dev server URL)
+5. Reload the page — Workfront will load your local extension instead of the published one
+
+> The forms widget local testing flag is slightly different: set `extensionoverride=TRUE` in localStorage to make the widget picker show locally active apps.
+
+## Chrome 142+ Local Network Access Fix
+
+Chrome 142 introduced Local Network Access Restrictions that block localhost connections from extension iframes. If your local extension fails to load:
+
+1. Open Chrome and navigate to `chrome://flags`
+2. Search for **Local Network Access Checks**
+3. Set the flag to **Disabled**
+4. Click **Relaunch**
+
+This is required for local dev (`aio app run`) on Chrome 142 and later.

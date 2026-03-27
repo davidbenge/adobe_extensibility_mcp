@@ -76,7 +76,7 @@ async function main(params) {
 - `entity:index` — list of IDs (e.g. `diagrams:index`)
 - `job:status` — progress for async task
 - Max TTL: 365 days (in seconds: 31536000); use -1 is no longer valid
-- Values are strings; use JSON.stringify/JSON.parse
+- **STATE_STORE.md** — allowed key characters, max key size, and string/binary value rules (serialize objects yourself)
 
 ## Multiple Extension Points
 
