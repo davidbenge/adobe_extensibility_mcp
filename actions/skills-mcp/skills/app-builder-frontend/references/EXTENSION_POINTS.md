@@ -16,7 +16,6 @@ All Adobe extensibility extension points, their App Builder mount paths (`xp`), 
 | `commerce/backend-ui/1` | Adobe Commerce UI extensions for admin panel | `src/commerce-backend-ui-1/` | `app-builder-frontend`, `app-builder-actions` |
 | `aem/cf-editor/1` | AEM Content Editor Extension | `src/aem-cf-editor-1/` | `app-builder-frontend`, `app-builder-actions` |
 | `universal-editor/ui/1` | Universal Editor Extension | `src/universal-editor-ui-1/` | `app-builder-frontend`, `app-builder-actions` |
-| `workfront/doc-details/1` | Workfront Document Details | `src/workfront-doc-details-1/` | `workfront-extension`, `app-builder-frontend`, `app-builder-actions` |
 | `workfront/ui/1` | Workfront UI | `src/workfront-ui-1/` | `workfront-extension`, `app-builder-frontend`, `app-builder-actions` |
 | `aem/experience-success-studio/1` | AEM Experience Success Studio | `src/aem-experience-success-studio-1/` | `app-builder-frontend`, `app-builder-actions` |
 | `aem/assets/details/1` | Experience Manager Assets Details View Extension | `src/aem-assets-details-1/` | `app-builder-frontend`, `app-builder-actions` |
@@ -36,9 +35,13 @@ Skills that go beyond the generic frontend/actions pair and carry product-specif
 
 | Product | xp values covered | Skill |
 |---------|-------------------|-------|
-| Workfront | `workfront/ui/1`, `workfront/doc-details/1` | `workfront-extension` |
+| Workfront | `workfront/ui/1` | `workfront-extension` |
 
 All other extension points have no dedicated product skill yet — `app-builder-frontend` + `app-builder-actions` cover their full implementation surface.
+
+## Workfront: document details (not a separate extension point)
+
+There is **no** standalone App Builder extension point such as `workfront/doc-details/1`. Document detail actions (buttons/links in the document details UI) are enabled on the same **`workfront/ui/1`** app via **`ExtensionRegistration`**: register a **`DOCUMENTS`** object with **`getItems()`** returning menu entries (`id`, `label`, `icon`, `url`). See **`workfront-extension`** → `EXTENSION_REGISTRATION.md` for the pattern.
 
 ## How to Use This Table
 

@@ -1,8 +1,9 @@
 ---
 name: workfront-extension
 description: >
-  Adobe Workfront product extension development using App Builder (workfront-ui-1 extension point).
+  Adobe Workfront product extension development using App Builder (workfront/ui/1 extension point only).
   Use when building Workfront extensions: mainMenu left-nav portal views, secondaryNav tabs on Task/Project/Documents/Issue/Portfolio/Program pages,
+  document details actions (DOCUMENTS.getItems in ExtensionRegistration),
   reading sharedContext (IMS token, object ID, user, hostname), registering extension points,
   or communicating between your extension iframe and the Workfront host via the UIX guest SDK.
   Always pair with the app-builder-frontend skill for UI component, React Spectrum, token handling, and action-wiring work —
@@ -13,13 +14,12 @@ metadata:
   version: "1.0"
   extensionPoints:
     - workfront/ui/1
-    - workfront/doc-details/1
 ---
 
 # Workfront Extension Developer
 
 ## Role
-Extension specialist for Workfront product extensions built on App Builder (workfront-ui-1 extension point).
+Extension specialist for Workfront product extensions built on App Builder (`workfront/ui/1`).
 
 ## Constitution & Impl-Log
 
@@ -48,7 +48,7 @@ Extension specialist for Workfront product extensions built on App Builder (work
 - **SECONDARY_NAV_EXTENSION.md** — Load when building secondaryNav extensions (custom tabs on Task, Project, Documents, Issue, Portfolio, or Program detail pages). Covers combined registration, all supported object types, local dev conflict avoidance, and the attach() view pattern.
 - **SHARED_CONTEXT.md** — Load when reading context data from Workfront (IMS token, object ID/type, hostname, user info). Includes the full ShowValues debug component, token usage for API calls, and the AuthTokenManager JWT utility.
 - **FORMS_WIDGET.md** — Load when building a widget embedded in a Workfront custom form field (widgets extension point). Covers registration, dimension config, sharedContext access, and how admins wire it up.
-- **EXTENSION_REGISTRATION.md** — Load when registering the extension in Adobe Developer Console or configuring ext.config.yaml
+- **EXTENSION_REGISTRATION.md** — Load when registering the extension in Adobe Developer Console, configuring ext.config.yaml, or adding **document details** entries via `DOCUMENTS` in ExtensionRegistration (same `workfront/ui/1` app — there is no separate document-details extension point)
 - **SHELL_INTEGRATION.md** — Load when attaching to the Workfront unified shell, using the UIX guest SDK, setting up local dev testing (extensionOverride), or debugging Chrome 142 local network issues
 - **NAVIGATION.md** — Load when implementing panel/route navigation within the extension
 - **COMMUNICATION.md** — Load when sending messages between the extension iframe and the Workfront host
@@ -67,6 +67,7 @@ Workfront extensions:
 
 | Task | Load |
 |------|------|
+| Add document details actions (DOCUMENTS menu) | EXTENSION_REGISTRATION.md |
 | Build a mainMenu extension (left-nav portal) | MAIN_MENU_EXTENSION.md |
 | Build a secondaryNav tab (Task/Project/Docs/etc.) | SECONDARY_NAV_EXTENSION.md |
 | Embed a custom widget in a Workfront custom form | FORMS_WIDGET.md |
