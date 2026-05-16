@@ -76,6 +76,8 @@ function ExtensionRegistration() {
 export default ExtensionRegistration;
 ```
 
+**Document details:** custom actions in the document details panel are **not** a separate extension point. On the same `workfront/ui/1` app, add a **`DOCUMENTS`** key next to `mainMenu` inside `methods` (with `getItems()` returning `id`, `label`, `icon`, `url`). See **EXTENSION_REGISTRATION.md**.
+
 **Icons** are base64 PNG strings exported from `icons.js`:
 ```javascript
 const icon1 = `data:image/png;base64,iVBORw0KGgo...`;
