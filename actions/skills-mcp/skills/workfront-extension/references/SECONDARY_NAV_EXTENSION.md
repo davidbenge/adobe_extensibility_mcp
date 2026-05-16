@@ -33,7 +33,7 @@ import { register } from "@adobe/uix-guest";
 import { extensionId, cfFormIcon } from "./Constants";
 import metadata from '../../../../app-metadata.json';
 
-function ExtensionRegistration({ isLocal }) {
+function ExtensionRegistration() {
   const init = async () => {
     await register({
       metadata,
@@ -45,8 +45,8 @@ function ExtensionRegistration({ isLocal }) {
           getItems() {
             return [
               {
-                id: isLocal ? 'myView_LDEV' : 'myView',
-                label: isLocal ? 'My View LDEV' : 'My View',
+                id: 'myView',
+                label: 'My View',
                 icon: cfFormIcon,
                 url: '/index.html#/my-view',
               },
@@ -60,8 +60,8 @@ function ExtensionRegistration({ isLocal }) {
             getItems() {
               return [
                 {
-                  id: isLocal ? 'taskTab1_LDEV' : 'taskTab1',
-                  label: isLocal ? 'My Task Tab LDEV' : 'My Task Tab',
+                  id: 'taskTab1',
+                  label: 'My Task Tab',
                   icon: cfFormIcon,
                   url: '/index.html#/task-view',
                 },
@@ -72,8 +72,8 @@ function ExtensionRegistration({ isLocal }) {
             getItems() {
               return [
                 {
-                  id: isLocal ? 'projectTab1_LDEV' : 'projectTab1',
-                  label: isLocal ? 'Project Details LDEV' : 'Project Details',
+                  id: 'projectTab1',
+                  label: 'Project Details',
                   icon: cfFormIcon,
                   url: '/index.html#/project-view',
                 },
@@ -84,8 +84,8 @@ function ExtensionRegistration({ isLocal }) {
             getItems() {
               return [
                 {
-                  id: isLocal ? 'docTab1_LDEV' : 'docTab1',
-                  label: isLocal ? 'Open In Express LDEV' : 'Open In Express',
+                  id: 'docTab1',
+                  label: 'Open In Express',
                   icon: cfFormIcon,
                   url: '/index.html#/document-view',
                 },
@@ -118,14 +118,13 @@ import ProjectView from "./secondaryNav/ProjectView";
 import DocumentView from "./secondaryNav/DocumentView";
 
 function App() {
-  const isLocal = window.location.href.includes("localhost");
 
   return (
     <Provider theme={defaultTheme} colorScheme="light">
       <Router>
         <Routes>
-          <Route index element={<ExtensionRegistration isLocal={isLocal} />} />
-          <Route path="index.html" element={<ExtensionRegistration isLocal={isLocal} />} />
+          <Route index element={<ExtensionRegistration />} />
+          <Route path="index.html" element={<ExtensionRegistration />} />
           {/* one route per secondaryNav item */}
           <Route path="task-view" element={<TaskView />} />
           <Route path="project-view" element={<ProjectView />} />
@@ -191,17 +190,13 @@ function TaskView() {
 
 ## Local Dev Conflict Avoidance
 
-If you run `aio app run` (localhost) while a deployed version is also active on the same Workfront instance, both will try to register the same IDs. Suffix local IDs with `_LDEV`:
+If you run `aio app run` (localhost) while a deployed version is also active on the same Workfront instance, both will try to register the same IDs. Suffix **local-only** tab `id` / `label` values with `_LDEV` (or otherwise ensure unique ids) so the two builds do not collide:
 
 ```javascript
-const isLocal = window.location.href.includes("localhost");
-
-// In register() getItems():
-id: isLocal ? 'taskTab1_LDEV' : 'taskTab1',
-label: isLocal ? 'My Task Tab LDEV' : 'My Task Tab',
+// In register() getItems() — example when you need a localhost-only variant:
+id: 'taskTab1_LDEV',
+label: 'My Task Tab LDEV',
 ```
-
-Pass `isLocal` as a prop from `App.js` down to `ExtensionRegistration`.
 
 ---
 
