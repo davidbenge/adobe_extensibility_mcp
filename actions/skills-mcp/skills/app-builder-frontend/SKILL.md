@@ -2,7 +2,7 @@
 name: app-builder-frontend
 description: >
   Adobe App Builder frontend (Jamstack, React, Adobe React Spectrum) for all Adobe extension points:
-  Unified Shell (dx/excshell/1), Workfront (workfront/ui/1, workfront/doc-details/1),
+  Unified Shell (dx/excshell/1), Workfront (workfront/ui/1),
   AEM (cf-console-admin, cf-editor, assets/details, assets/browse, assets/collections, cf-model-editor,
   experience-success-studio, contenthub, launchpad), Commerce (backend-ui, configuration, extensibility),
   Universal Editor (universal-editor/ui/1), and GenStudio (genstudiopem, translation).
@@ -64,8 +64,7 @@ Frontend specialist for App Builder extension-point apps. Uses Adobe React Spect
 | `commerce/backend-ui/1` | Adobe Commerce UI extensions for admin panel | `src/commerce-backend-ui-1/web-src/` |
 | `aem/cf-editor/1` | AEM Content Editor Extension | `src/aem-cf-editor-1/web-src/` |
 | `universal-editor/ui/1` | Universal Editor Extension | `src/universal-editor-ui-1/web-src/` |
-| `workfront/doc-details/1` | Workfront Document Details | `src/workfront-doc-details-1/web-src/` |
-| `workfront/ui/1` | Workfront UI | `src/workfront-ui-1/web-src/` |
+| `workfront/ui/1` | Workfront UI (mainMenu, secondaryNav, forms, **document details** via `DOCUMENTS` in ExtensionRegistration — not a separate xp) | `src/workfront-ui-1/web-src/` |
 | `aem/experience-success-studio/1` | AEM Experience Success Studio | `src/aem-experience-success-studio-1/web-src/` |
 | `aem/assets/details/1` | Experience Manager Assets Details View Extension | `src/aem-assets-details-1/web-src/` |
 | `aem/assets/browse/1` | Experience Manager Assets View Browse Extension | `src/aem-assets-browse-1/web-src/` |
